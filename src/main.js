@@ -12,6 +12,7 @@ import { saveDraft, loadDraft, DEMO_TEMPLATE } from './core/storage.js';
 let currentSlideIndex = 0;
 let slidesHTML = [];
 let autosaveTimeout = null;
+let isDocumentMode = false;
 
 // DOM Element Selectors
 const markdownInput = document.getElementById('markdown-input');
@@ -26,6 +27,7 @@ const themeButtons = document.querySelectorAll('[data-set-theme]');
 const toggleCrtBtn = document.getElementById('toggle-crt');
 const toggleAudioBtn = document.getElementById('toggle-audio');
 const toggleEditorBtn = document.getElementById('toggle-editor');
+const toggleDocBtn = document.getElementById('toggle-doc');
 const btnFullscreen = document.getElementById('btn-fullscreen');
 const btnExport = document.getElementById('btn-export');
 const btnTemplate = document.getElementById('btn-template');
@@ -49,10 +51,23 @@ function renderSlides() {
   }
   currentSlideNum.textContent = currentSlideIndex + 1;
   
-  // Render slide content
-  slideContainer.innerHTML = slidesHTML[currentSlideIndex] || '';
+  if (isDocumentMode) {
+    // Hide pagination HUD and show all slides stacked vertically
+    document.body.classList.add('document-mode');
+    
+    // Map all slides into card slots
+    const documentHTML = slidesHTML.map((slideHTML, idx) => {
+      return `<div class="slide-card-page" data-slide-page="${idx + 1}">${slideHTML}</div>`;
+    }).join('');
+    
+    slideContainer.innerHTML = documentHTML;
+  } else {
+    // Show single slide card
+    document.body.classList.remove('document-mode');
+    slideContainer.innerHTML = slidesHTML[currentSlideIndex] || '';
+  }
   
-  // Inject Dynamic Interactive Components
+  // Inject Dynamic Interactive Components (runs on single slide or all of them)
   renderLoops(slideContainer);
   renderPacingGraphs(slideContainer);
   renderStateMachines(slideContainer);
@@ -180,8 +195,9 @@ function updateStatusHUD(msg) {
 
 // Key Bindings
 document.addEventListener('keydown', (e) => {
-  // Disable slide controls if user is writing in the editor
+  // Disable slide controls if user is writing in the editor or in GDD Document Mode
   if (document.activeElement === markdownInput) return;
+  if (isDocumentMode) return; // Skip arrows pagination inside scroll view
   
   if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
     e.preventDefault();
@@ -253,6 +269,32 @@ toggleEditorBtn.addEventListener('click', () => {
   }, 320);
 });
 toggleEditorBtn.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// Toggle Slide Mode vs GDD Document Mode
+toggleDocBtn.addEventListener('click', () => {
+  isDocumentMode = !isDocumentMode;
+  toggleDocBtn.classList.toggle('active', isDocumentMode);
+  AudioEngine.playClick();
+  
+  // Trigger screen glitch visual aberration during mode transition
+  document.body.classList.add('glitch-active');
+  setTimeout(() => {
+    document.body.classList.remove('glitch-active');
+  }, 220);
+  
+  renderSlides();
+  
+  // Disable navigation buttons in document mode
+  const presenterHud = document.querySelector('.presenter-hud');
+  if (isDocumentMode) {
+    presenterHud.style.display = 'none';
+    updateStatusHUD("GDD DOCUMENT READER ACTIVE");
+  } else {
+    presenterHud.style.display = '';
+    updateStatusHUD(`VIEWING SLIDE ${currentSlideIndex + 1}`);
+  }
+});
+toggleDocBtn.addEventListener('mouseenter', () => AudioEngine.playHover());
 
 // Toggles (CRT / AUDIO)
 toggleCrtBtn.addEventListener('click', () => {

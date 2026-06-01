@@ -268,11 +268,73 @@ body {
 .btn-action {
   background: var(--bg-input);
   color: var(--text-main);
+  position: relative;
+  overflow: hidden;
+}
+.btn-action::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  transform: skewX(-20deg);
+  transition: 0.75s ease;
+  pointer-events: none;
+}
+.btn-action:hover::after {
+  left: 120%;
 }
 .btn-action:hover {
   border-color: var(--text-accent);
   color: var(--text-accent);
   box-shadow: var(--shadow-glow);
+  transform: translateY(-1px) skewX(-4deg);
+}
+
+/* Polished Top HUD Buttons */
+.btn-present {
+  background: rgba(var(--accent-rgb), 0.12) !important;
+  color: var(--text-accent) !important;
+  border: 1.5px solid var(--text-accent) !important;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  box-shadow: var(--shadow-glow);
+}
+.btn-present:hover {
+  background: var(--text-accent) !important;
+  color: var(--bg-app) !important;
+  box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.5) !important;
+  transform: translateY(-2px) scale(1.03) skewX(-4deg) !important;
+}
+.btn-present .key-badge {
+  background: rgba(var(--accent-rgb), 0.2);
+  color: var(--text-accent);
+}
+.btn-present:hover .key-badge {
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--bg-app);
+}
+
+.btn-export {
+  border-color: var(--border-color);
+  color: var(--text-main);
+}
+.btn-export:hover {
+  border-color: var(--text-accent-secondary);
+  color: var(--text-accent-secondary);
+  box-shadow: var(--shadow-glow-pink);
+}
+
+.btn-deck {
+  border-color: var(--border-color);
+  color: var(--text-muted);
+}
+.btn-deck:hover {
+  border-color: var(--text-accent-secondary);
+  color: var(--text-accent-secondary);
+  box-shadow: var(--shadow-glow-pink);
 }
 .key-badge {
   background: var(--border-color);
@@ -1146,5 +1208,53 @@ body.drawer-open .audio-deck-drawer {
 .btn-test-sound:hover {
   border-color: var(--text-accent-secondary);
   color: var(--text-accent-secondary);
+}
+
+/* ==========================================================================
+   DOCUMENT MODE LAYOUT OVERRIDES
+   ========================================================================== */
+body.document-mode .slide-container {
+  display: block !important;
+  aspect-ratio: auto !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 16px !important;
+  overflow-y: auto !important;
+}
+
+body.document-mode .slide-card-page {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 40px;
+  margin: 0 auto 32px auto;
+  width: 100%;
+  max-width: 1000px;
+  aspect-ratio: 16/9;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  box-shadow: var(--shadow-glow), 0 6px 20px rgba(0,0,0,0.15);
+  box-sizing: border-box;
+}
+
+body.document-mode .slide-card-page::after {
+  content: "PAGE " attr(data-slide-page);
+  position: absolute;
+  bottom: 16px;
+  right: 24px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  opacity: 0.5;
+}
+
+[data-theme="cozy"] body.document-mode .slide-card-page {
+  box-shadow: 0 4px 15px rgba(124, 74, 36, 0.05);
 }
 
