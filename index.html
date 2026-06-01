@@ -35,14 +35,16 @@
       <div class="header-controls">
         <!-- Theme Selectors -->
         <div class="control-group">
-          <label>THEME</label>
-          <div class="segmented-control">
-            <button class="theme-btn active" data-set-theme="cyberpunk">CYBERPUNK</button>
-            <button class="theme-btn" data-set-theme="synthwave">SYNTH</button>
-            <button class="theme-btn" data-set-theme="frost">FROST</button>
-            <button class="theme-btn" data-set-theme="steampunk">STEAMPUNK</button>
-            <button class="theme-btn" data-set-theme="cozy">COZY</button>
-            <button class="theme-btn" data-set-theme="minimalist">MINIMAL</button>
+          <label for="theme-select">THEME</label>
+          <div class="theme-select-container">
+            <select id="theme-select" class="theme-select" aria-label="Select visual theme">
+              <option value="cyberpunk">CYBERPUNK</option>
+              <option value="synthwave">SYNTHWAVE ARCADE</option>
+              <option value="frost">FROST SCI-FI</option>
+              <option value="steampunk">STEAMPUNK BRASS</option>
+              <option value="cozy">COZY RPG</option>
+              <option value="minimalist">MINIMALIST</option>
+            </select>
           </div>
         </div>
 

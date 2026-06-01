@@ -24,7 +24,7 @@ const prevSlideBtn = document.getElementById('prev-slide-btn');
 const nextSlideBtn = document.getElementById('next-slide-btn');
 const statusMessage = document.getElementById('status-message');
 
-const themeButtons = document.querySelectorAll('[data-set-theme]');
+const themeSelect = document.getElementById('theme-select');
 const toggleCrtBtn = document.getElementById('toggle-crt');
 const toggleAudioBtn = document.getElementById('toggle-audio');
 const toggleEditorBtn = document.getElementById('toggle-editor');
@@ -228,22 +228,15 @@ function exitFullscreen() {
 }
 
 // Theme Controls
-themeButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const theme = btn.getAttribute('data-set-theme');
-    document.documentElement.setAttribute('data-theme', theme);
-    
-    // Toggle active segment styling
-    themeButtons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    
-    AudioEngine.playClick();
-    // Redraw graphs so color scales matching theme variables refresh
-    renderSlides();
-  });
+themeSelect.addEventListener('change', (e) => {
+  const theme = e.target.value;
+  document.documentElement.setAttribute('data-theme', theme);
   
-  btn.addEventListener('mouseenter', () => AudioEngine.playHover());
+  AudioEngine.playClick();
+  // Redraw graphs so color scales matching theme variables refresh
+  renderSlides();
 });
+themeSelect.addEventListener('mouseenter', () => AudioEngine.playHover());
 
 // Toggle Sidebar Editor Pane (Solos Live Presentation view)
 toggleEditorBtn.addEventListener('click', () => {
