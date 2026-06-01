@@ -24,7 +24,7 @@ export function renderPacingGraphs(container) {
         <span class="pacing-title">INTENSITY / CHALLENGE CURVE</span>
         <span class="pacing-title" id="pacing-status-val">INTERACTIVE PREVIEW</span>
       </div>
-      <canvas class="pacing-canvas" width="600" height="200"></canvas>
+      <canvas class="pacing-canvas"></canvas>
       <div class="pacing-controls">
     `;
     
@@ -63,6 +63,18 @@ export function renderPacingGraphs(container) {
     
     // Draw function
     const drawCurve = () => {
+      const displayWidth = canvas.clientWidth;
+      const displayHeight = canvas.clientHeight;
+      
+      if (displayWidth === 0 || displayHeight === 0) {
+        return;
+      }
+      
+      if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
+        canvas.width = displayWidth;
+        canvas.height = displayHeight;
+      }
+      
       const w = canvas.width;
       const h = canvas.height;
       
@@ -157,6 +169,12 @@ export function renderPacingGraphs(container) {
     };
     
     drawCurve();
+    
+    // Setup ResizeObserver to handle auto-resize and sharp rendering
+    const resizeObserver = new ResizeObserver(() => {
+      drawCurve();
+    });
+    resizeObserver.observe(canvas);
     
     // Helper to animate curve transitions smoothly
     const animateToPoints = (targetPoints) => {

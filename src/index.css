@@ -90,6 +90,87 @@
   --grid-size: 30px 30px;
 }
 
+/* Theme: Synthwave Arcade */
+[data-theme="synthwave"] {
+  --bg-app: #0f051d;
+  --bg-panel: #18092f;
+  --bg-input: #210d3f;
+  --border-color: #38156e;
+  --border-glow: #ff007f;
+  
+  --text-main: #f3e9ff;
+  --text-muted: #8972a9;
+  --text-accent: #ff007f; /* Cyber Hot Pink */
+  --text-accent-secondary: #00ffff; /* Cyber Turquoise */
+  
+  --accent-rgb: 255, 0, 127;
+  --accent-secondary-rgb: 0, 255, 255;
+  
+  --shadow-glow: 0 0 12px rgba(255, 0, 127, 0.35);
+  --shadow-glow-pink: 0 0 12px rgba(0, 255, 255, 0.35);
+  
+  --grid-bg: linear-gradient(rgba(255, 0, 127, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 0, 127, 0.03) 1px, transparent 1px);
+  --grid-size: 24px 24px;
+}
+
+/* Theme: Frost Sci-Fi (Glassmorphic Light) */
+[data-theme="frost"] {
+  --bg-app: #e2eaf0;
+  --bg-panel: rgba(255, 255, 255, 0.45);
+  --bg-input: rgba(255, 255, 255, 0.7);
+  --border-color: rgba(255, 255, 255, 0.5);
+  --border-glow: #3b9bd9;
+  
+  --text-main: #1f2e3d;
+  --text-muted: #6e8294;
+  --text-accent: #0f7bc2; /* Glacial Blue */
+  --text-accent-secondary: #1aa392; /* Ice Mint */
+  
+  --accent-rgb: 15, 123, 194;
+  --accent-secondary-rgb: 26, 163, 146;
+  
+  --shadow-glow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+  --shadow-glow-pink: 0 8px 32px 0 rgba(26, 163, 146, 0.08);
+  
+  --grid-bg: radial-gradient(circle, rgba(15, 123, 194, 0.06) 1.5px, transparent 1.5px);
+  --grid-size: 24px 24px;
+}
+
+/* Apply Glassmorphic Blur to Frost theme containers */
+[data-theme="frost"] .slide-container,
+[data-theme="frost"] .app-header,
+[data-theme="frost"] .editor-pane,
+[data-theme="frost"] .panel-header,
+[data-theme="frost"] .presenter-hud,
+[data-theme="frost"] .injector-tray,
+[data-theme="frost"] .audio-deck-drawer {
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+}
+
+/* Theme: Steampunk Brass */
+[data-theme="steampunk"] {
+  --bg-app: #181411;
+  --bg-panel: #26201a;
+  --bg-input: #1e1914;
+  --border-color: #4b3a2f;
+  --border-glow: #c78b4c;
+  
+  --text-main: #e2d3c5;
+  --text-muted: #857262;
+  --text-accent: #c78b4c; /* Brass */
+  --text-accent-secondary: #c2653c; /* Copper */
+  
+  --accent-rgb: 199, 139, 76;
+  --accent-secondary-rgb: 194, 101, 60;
+  
+  --shadow-glow: 0 4px 15px rgba(199, 139, 76, 0.12);
+  --shadow-glow-pink: 0 4px 15px rgba(194, 101, 60, 0.12);
+  
+  --grid-bg: none;
+  --grid-size: auto;
+}
+
 /* ==========================================================================
    GLOBAL RESET & FONTS
    ========================================================================== */
@@ -516,12 +597,12 @@ body.markdown-solo .editor-pane {
 /* Active Slide Container */
 .slide-container {
   width: 100%;
-  max-width: 1050px;
+  max-width: 1250px;
   aspect-ratio: 16/9;
   background: var(--bg-panel);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-md);
-  padding: 40px;
+  padding: 48px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -531,7 +612,7 @@ body.markdown-solo .editor-pane {
   transition: transform var(--transition-smooth), max-width var(--transition-smooth);
 }
 body.live-solo .slide-container {
-  max-width: 1180px;
+  max-width: 1550px;
 }
 [data-theme="cozy"] .slide-container {
   box-shadow: 0 8px 24px rgba(124, 74, 36, 0.06);
