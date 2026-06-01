@@ -1,0 +1,390 @@
+// ==========================================================================
+// CORE APPLICATION COORDINATOR
+// ==========================================================================
+import { parseMarkdownToSlides } from './core/markdown.js';
+import { AudioEngine } from './core/audio.js';
+import { renderLoops } from './components/loop.js';
+import { renderPacingGraphs } from './components/pacing.js';
+import { renderStateMachines } from './components/stateMachine.js';
+import { saveDraft, loadDraft, DEMO_TEMPLATE } from './core/storage.js';
+
+// Application State
+let currentSlideIndex = 0;
+let slidesHTML = [];
+let autosaveTimeout = null;
+
+// DOM Element Selectors
+const markdownInput = document.getElementById('markdown-input');
+const slideContainer = document.getElementById('slide-container');
+const currentSlideNum = document.getElementById('current-slide-num');
+const totalSlidesNum = document.getElementById('total-slides-num');
+const prevSlideBtn = document.getElementById('prev-slide-btn');
+const nextSlideBtn = document.getElementById('next-slide-btn');
+const statusMessage = document.getElementById('status-message');
+
+const themeButtons = document.querySelectorAll('[data-set-theme]');
+const toggleCrtBtn = document.getElementById('toggle-crt');
+const toggleAudioBtn = document.getElementById('toggle-audio');
+const btnFullscreen = document.getElementById('btn-fullscreen');
+const btnExport = document.getElementById('btn-export');
+const btnTemplate = document.getElementById('btn-template');
+
+const audioModal = document.getElementById('audio-modal');
+const btnEnableAudio = document.getElementById('btn-enable-audio');
+
+// ==========================================================================
+// RENDER ENGINE
+// ==========================================================================
+function renderSlides() {
+  const markdownText = markdownInput.value;
+  slidesHTML = parseMarkdownToSlides(markdownText);
+  
+  // Update Slide Counts
+  totalSlidesNum.textContent = slidesHTML.length;
+  
+  // Cap index if slides were deleted
+  if (currentSlideIndex >= slidesHTML.length) {
+    currentSlideIndex = Math.max(0, slidesHTML.length - 1);
+  }
+  currentSlideNum.textContent = currentSlideIndex + 1;
+  
+  // Render slide content
+  slideContainer.innerHTML = slidesHTML[currentSlideIndex] || '';
+  
+  // Inject Dynamic Interactive Components
+  renderLoops(slideContainer);
+  renderPacingGraphs(slideContainer);
+  renderStateMachines(slideContainer);
+  initialize3DTilts();
+}
+
+function goToSlide(index) {
+  if (index < 0 || index >= slidesHTML.length) return;
+  
+  currentSlideIndex = index;
+  currentSlideNum.textContent = currentSlideIndex + 1;
+  
+  // Synthesize transitions
+  AudioEngine.playTransition();
+  
+  // Trigger screen glitch visual aberration
+  document.body.classList.add('glitch-active');
+  setTimeout(() => {
+    document.body.classList.remove('glitch-active');
+  }, 220);
+  
+  // Render
+  renderSlides();
+  updateStatusHUD(`VIEWING SLIDE ${currentSlideIndex + 1}`);
+}
+
+// ==========================================================================
+// 3D CARD PARALLAX EFFECT
+// ==========================================================================
+function initialize3DTilts() {
+  const cards = slideContainer.querySelectorAll('.tilt-card');
+  
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left; // x position inside element
+      const y = e.clientY - rect.top;  // y position inside element
+      
+      const width = rect.width;
+      const height = rect.height;
+      
+      // Calculate rotation degree (max 15 deg)
+      const rY = ((x / width) - 0.5) * 20;
+      const rX = -((y / height) - 0.5) * 20;
+      
+      card.style.transform = `rotateX(${rX}deg) rotateY(${rY}deg) scale(1.03)`;
+    });
+    
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+    });
+    
+    card.addEventListener('mouseenter', () => {
+      AudioEngine.playHover();
+    });
+    
+    card.addEventListener('click', () => {
+      AudioEngine.playClick();
+    });
+  });
+}
+
+// ==========================================================================
+// COMPONENT INJECTOR UTILITIES
+// ==========================================================================
+function injectMarkup(type) {
+  const cursorIndex = markdownInput.selectionStart;
+  const originalText = markdownInput.value;
+  let injectionText = '';
+  
+  switch(type) {
+    case 'slide':
+      injectionText = '\n---\n# NEW SLIDE TITLE\n## Subheading\n- Point 1\n- Point 2\n';
+      break;
+    case 'loop':
+      injectionText = '\n[loop: Start -> Core Loop -> Action -> Reward]\n';
+      break;
+    case 'pacing':
+      injectionText = '\n[pacing: 15, 30, 75, 40, 20]\n';
+      break;
+    case 'state':
+      injectionText = '\n[state: Idle (Resting / scanning) -> Chase (Locking target) -> Attack (Fire pulse) -> Search (Seek target)]\n';
+      break;
+    case 'card':
+      injectionText = '\n[card: Feature Title | Visual descriptions of custom game systems.]\n';
+      break;
+  }
+  
+  const textBefore = originalText.substring(0, cursorIndex);
+  const textAfter = originalText.substring(cursorIndex);
+  
+  markdownInput.value = textBefore + injectionText + textAfter;
+  markdownInput.focus();
+  
+  // Move cursor past the injected block
+  const newCursorIndex = cursorIndex + injectionText.length;
+  markdownInput.setSelectionRange(newCursorIndex, newCursorIndex);
+  
+  AudioEngine.playClick();
+  renderSlides();
+  triggerAutoSave();
+}
+
+// ==========================================================================
+// SYSTEM AUTOSAVE
+// ==========================================================================
+function triggerAutoSave() {
+  updateStatusHUD("SAVING...");
+  
+  if (autosaveTimeout) clearTimeout(autosaveTimeout);
+  
+  autosaveTimeout = setTimeout(() => {
+    saveDraft(markdownInput.value);
+    updateStatusHUD("SYSTEM READY • AUTO-SAVED");
+  }, 1000);
+}
+
+function updateStatusHUD(msg) {
+  statusMessage.textContent = msg;
+}
+
+// ==========================================================================
+// EVENT ATTACHMENTS & CONTROLS
+// ==========================================================================
+
+// Key Bindings
+document.addEventListener('keydown', (e) => {
+  // Disable slide controls if user is writing in the editor
+  if (document.activeElement === markdownInput) return;
+  
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+    e.preventDefault();
+    if (currentSlideIndex < slidesHTML.length - 1) {
+      goToSlide(currentSlideIndex + 1);
+    } else {
+      AudioEngine.playClick(); // play boundary sound
+    }
+  } else if (e.key === 'ArrowLeft' || e.key === 'Backspace' || e.key === 'PageUp') {
+    e.preventDefault();
+    if (currentSlideIndex > 0) {
+      goToSlide(currentSlideIndex - 1);
+    } else {
+      AudioEngine.playClick();
+    }
+  } else if (e.key.toLowerCase() === 'f') {
+    e.preventDefault();
+    toggleFullscreen();
+  } else if (e.key === 'Escape') {
+    if (document.body.classList.contains('presentation-fullscreen')) {
+      exitFullscreen();
+    }
+  }
+});
+
+// Fullscreen PRESENT Toggle
+function toggleFullscreen() {
+  AudioEngine.playClick();
+  if (!document.body.classList.contains('presentation-fullscreen')) {
+    document.body.classList.add('presentation-fullscreen');
+    updateStatusHUD("FULLSCREEN PRESENTER MODE ACTIVE");
+  } else {
+    exitFullscreen();
+  }
+}
+
+function exitFullscreen() {
+  document.body.classList.remove('presentation-fullscreen');
+  updateStatusHUD("SYSTEM READY");
+}
+
+// Theme Controls
+themeButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const theme = btn.getAttribute('data-set-theme');
+    document.documentElement.setAttribute('data-theme', theme);
+    
+    // Toggle active segment styling
+    themeButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    AudioEngine.playClick();
+    // Redraw graphs so color scales matching theme variables refresh
+    renderSlides();
+  });
+  
+  btn.addEventListener('mouseenter', () => AudioEngine.playHover());
+});
+
+// Toggles (CRT / AUDIO)
+toggleCrtBtn.addEventListener('click', () => {
+  const isCrt = document.documentElement.getAttribute('data-crt') === 'true';
+  document.documentElement.setAttribute('data-crt', !isCrt ? 'true' : 'false');
+  toggleCrtBtn.classList.toggle('active', !isCrt);
+  AudioEngine.playClick();
+});
+toggleCrtBtn.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+toggleAudioBtn.addEventListener('click', () => {
+  const isAudio = document.documentElement.getAttribute('data-audio') === 'true';
+  document.documentElement.setAttribute('data-audio', !isAudio ? 'true' : 'false');
+  toggleAudioBtn.classList.toggle('active', !isAudio);
+  
+  AudioEngine.setEnabled(!isAudio);
+  AudioEngine.playClick();
+});
+toggleAudioBtn.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// Nav HUD buttons
+prevSlideBtn.addEventListener('click', () => {
+  if (currentSlideIndex > 0) goToSlide(currentSlideIndex - 1);
+});
+prevSlideBtn.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+nextSlideBtn.addEventListener('click', () => {
+  if (currentSlideIndex < slidesHTML.length - 1) goToSlide(currentSlideIndex + 1);
+});
+nextSlideBtn.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+btnFullscreen.addEventListener('click', toggleFullscreen);
+btnFullscreen.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// PDF Print Export
+btnExport.addEventListener('click', () => {
+  AudioEngine.playClick();
+  window.print();
+});
+btnExport.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// Template Reloader
+btnTemplate.addEventListener('click', () => {
+  if (confirm("Reset layout with demo GDD? Your unsaved draft will be replaced.")) {
+    markdownInput.value = DEMO_TEMPLATE;
+    currentSlideIndex = 0;
+    AudioEngine.playSuccess();
+    renderSlides();
+    triggerAutoSave();
+  }
+});
+btnTemplate.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// Component Injectors Tray
+document.querySelectorAll('[data-inject]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const type = btn.getAttribute('data-inject');
+    injectMarkup(type);
+  });
+  btn.addEventListener('mouseenter', () => AudioEngine.playHover());
+});
+
+// Sound alerts on input editing
+markdownInput.addEventListener('input', () => {
+  renderSlides();
+  triggerAutoSave();
+});
+
+// Enable Audio Initialize Modal
+btnEnableAudio.addEventListener('click', () => {
+  AudioEngine.init();
+  audioModal.classList.add('hidden');
+});
+btnEnableAudio.addEventListener('mouseenter', () => {
+  // Standard hover won't work yet since Context is not initialized,
+  // but it indicates UI feedback.
+});
+
+// Audio Deck Drawer Selectors
+const btnAudioDeck = document.getElementById('btn-audio-deck');
+const btnCloseDrawer = document.getElementById('btn-close-drawer');
+const audioDeckDrawer = document.getElementById('audio-deck-drawer');
+
+const paramHoverFreq = document.getElementById('param-hover-freq');
+const paramHoverDecay = document.getElementById('param-hover-decay');
+const paramHoverWave = document.getElementById('param-hover-wave');
+const btnTestHover = document.getElementById('btn-test-hover');
+
+const paramClickFreq = document.getElementById('param-click-freq');
+const paramClickDecay = document.getElementById('param-click-decay');
+const paramClickWave = document.getElementById('param-click-wave');
+const btnTestClick = document.getElementById('btn-test-click');
+
+// Toggle Drawer Open/Close
+btnAudioDeck.addEventListener('click', () => {
+  document.body.classList.toggle('drawer-open');
+  AudioEngine.playClick();
+});
+btnAudioDeck.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+btnCloseDrawer.addEventListener('click', () => {
+  document.body.classList.remove('drawer-open');
+  AudioEngine.playClick();
+});
+btnCloseDrawer.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// Sliders mapping and text updates
+paramHoverFreq.addEventListener('input', (e) => {
+  const val = e.target.value;
+  document.getElementById('val-hover-freq').textContent = `${val} Hz`;
+  AudioEngine.config.hover.freq = parseInt(val, 10);
+});
+paramHoverDecay.addEventListener('input', (e) => {
+  const val = e.target.value;
+  document.getElementById('val-hover-decay').textContent = `${val}s`;
+  AudioEngine.config.hover.decay = parseFloat(val);
+});
+paramHoverWave.addEventListener('change', (e) => {
+  AudioEngine.config.hover.type = e.target.value;
+});
+btnTestHover.addEventListener('click', () => AudioEngine.playHover());
+
+paramClickFreq.addEventListener('input', (e) => {
+  const val = e.target.value;
+  document.getElementById('val-click-freq').textContent = `${val} Hz`;
+  AudioEngine.config.click.freq = parseInt(val, 10);
+});
+paramClickDecay.addEventListener('input', (e) => {
+  const val = e.target.value;
+  document.getElementById('val-click-decay').textContent = `${val}s`;
+  AudioEngine.config.click.decay = parseFloat(val);
+});
+paramClickWave.addEventListener('change', (e) => {
+  AudioEngine.config.click.type = e.target.value;
+});
+btnTestClick.addEventListener('click', () => AudioEngine.playClick());
+
+// ==========================================================================
+// SYSTEM INITIATION
+// ==========================================================================
+function start() {
+  const loadedScript = loadDraft();
+  markdownInput.value = loadedScript;
+  
+  renderSlides();
+  updateStatusHUD("SYSTEM READY");
+}
+
+start();

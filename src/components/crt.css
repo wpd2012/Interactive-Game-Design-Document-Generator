@@ -1,0 +1,174 @@
+/* ==========================================================================
+   CRT MONITOR EMULATION
+   ========================================================================== */
+
+/* CRT Vignette Overlay */
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.5) 100%);
+  pointer-events: none;
+  z-index: 99999;
+  transition: opacity 0.3s ease;
+}
+
+/* CRT Scanline Overlay */
+.crt-scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 99998;
+  transition: opacity 0.3s ease;
+}
+
+/* Flicker Animation */
+[data-crt="true"] body::after {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(18, 16, 16, 0.08);
+  opacity: 0;
+  z-index: 99997;
+  pointer-events: none;
+  animation: crt-flicker 0.15s infinite;
+}
+
+/* Control visibility through HTML attributes */
+[data-crt="false"] .crt-overlay,
+[data-crt="false"] .crt-scanlines {
+  opacity: 0;
+}
+
+/* ==========================================================================
+   GLITCH TEXT & SCREEN ANIMATIONS
+   ========================================================================== */
+@keyframes crt-flicker {
+  0% { opacity: 0.27861; }
+  5% { opacity: 0.34769; }
+  10% { opacity: 0.23604; }
+  15% { opacity: 0.90626; }
+  20% { opacity: 0.18128; }
+  25% { opacity: 0.83891; }
+  30% { opacity: 0.65583; }
+  35% { opacity: 0.67807; }
+  40% { opacity: 0.26559; }
+  45% { opacity: 0.84693; }
+  50% { opacity: 0.96019; }
+  55% { opacity: 0.13594; }
+  60% { opacity: 0.88013; }
+  65% { opacity: 0.58585; }
+  70% { opacity: 0.5861; }
+  75% { opacity: 0.95754; }
+  80% { opacity: 0.16018; }
+  85% { opacity: 0.25103; }
+  90% { opacity: 0.90226; }
+  95% { opacity: 0.36108; }
+  100% { opacity: 0.32087; }
+}
+
+/* Glitch text effect for logos/intro screens */
+.glitch-text {
+  position: relative;
+}
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-panel);
+}
+.glitch-text::before {
+  left: 2px;
+  text-shadow: -1px 0 var(--text-accent-secondary);
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+.glitch-text::after {
+  left: -2px;
+  text-shadow: -1px 0 var(--text-accent);
+  clip: rect(85px, 450px, 140px, 0);
+  animation: glitch-anim2 5s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+  0% { clip: rect(15px, 9999px, 66px, 0); }
+  10% { clip: rect(34px, 9999px, 55px, 0); }
+  20% { clip: rect(78px, 9999px, 5px, 0); }
+  30% { clip: rect(46px, 9999px, 60px, 0); }
+  40% { clip: rect(98px, 9999px, 35px, 0); }
+  50% { clip: rect(12px, 9999px, 85px, 0); }
+  60% { clip: rect(54px, 9999px, 11px, 0); }
+  70% { clip: rect(29px, 9999px, 99px, 0); }
+  80% { clip: rect(87px, 9999px, 44px, 0); }
+  90% { clip: rect(62px, 9999px, 73px, 0); }
+  100% { clip: rect(40px, 9999px, 92px, 0); }
+}
+
+@keyframes glitch-anim2 {
+  0% { clip: rect(65px, 9999px, 15px, 0); }
+  10% { clip: rect(12px, 9999px, 98px, 0); }
+  20% { clip: rect(45px, 9999px, 22px, 0); }
+  30% { clip: rect(77px, 9999px, 65px, 0); }
+  40% { clip: rect(8px, 9999px, 87px, 0); }
+  50% { clip: rect(89px, 9999px, 4px, 0); }
+  60% { clip: rect(21px, 9999px, 73px, 0); }
+  70% { clip: rect(56px, 9999px, 18px, 0); }
+  80% { clip: rect(38px, 9999px, 99px, 0); }
+  90% { clip: rect(90px, 9999px, 54px, 0); }
+  100% { clip: rect(10px, 9999px, 42px, 0); }
+}
+
+/* Glitch Transition Triggered on Body */
+body.glitch-active .slide-container {
+  animation: transition-glitch 0.22s infinite linear;
+}
+body.glitch-active .crt-scanlines {
+  background-size: 100% 2px; /* Denser scanlines during glitch */
+  opacity: 0.85;
+}
+
+@keyframes transition-glitch {
+  0% {
+    transform: translate(2px, 1px) skewX(2deg);
+    filter: hue-rotate(90deg) contrast(1.4);
+  }
+  20% {
+    transform: translate(-1px, -2px) skewX(-3deg);
+    filter: hue-rotate(180deg) brightness(1.2);
+  }
+  40% {
+    transform: translate(-3px, 0px) skewX(1deg);
+    filter: saturate(2) invert(0.05);
+  }
+  60% {
+    transform: translate(0px, 2px) skewX(-1deg);
+    filter: hue-rotate(270deg) contrast(1.2);
+  }
+  80% {
+    transform: translate(2px, -1px) skewX(3deg);
+    filter: brightness(1.4);
+  }
+  100% {
+    transform: translate(-1px, 1px) skewX(0deg);
+    filter: none;
+  }
+}
+
