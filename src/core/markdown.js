@@ -86,6 +86,25 @@ export function parseMarkdownToSlides(markdown) {
         continue;
       }
 
+      // Sandbox Playground: [sandbox: formula | Damage = ATK * 1.5 - DEF | ATK: 50, DEF: 20]
+      const sandboxMatch = line.match(/^\[sandbox:\s*([^\s|]+)\s*\|\s*([^\]]+)\]/);
+      if (sandboxMatch) {
+        flushList();
+        const type = sandboxMatch[1].trim();
+        const config = sandboxMatch[2].trim();
+        html += `<div class="sandbox-container" data-type="${type}" data-config="${config}"></div>`;
+        continue;
+      }
+
+      // Timeline Roadmap: [roadmap: Concept (Design, Q1) -> Prototype (Core, Q2)]
+      const roadmapMatch = line.match(/^\[roadmap:\s*([^\]]+)\]/);
+      if (roadmapMatch) {
+        flushList();
+        const steps = roadmapMatch[1].split('->').map(s => s.trim());
+        html += `<div class="roadmap-container" data-points="${steps.join('|')}"></div>`;
+        continue;
+      }
+
       // State machine diagram: [state: Idle (Scan area) -> Patrol (Walk path)]
       const stateMatch = line.match(/^\[state:\s*([^\]]+)\]/);
       if (stateMatch) {

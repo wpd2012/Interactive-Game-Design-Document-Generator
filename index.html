@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Playable GDD & Pitch Deck Engine</title>
+  <title>Interactive GDD & Pitch Deck Engine</title>
   <!-- Google Fonts: Inter for UI, Outfit for headers, JetBrains Mono for code -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,7 +29,7 @@
     <header class="app-header">
       <div class="header-logo">
         <span class="logo-icon">🎮</span>
-        <h1 class="logo-title">PLAYABLE GDD & PITCH ENGINE</h1>
+        <h1 class="logo-title">INTERACTIVE GDD & PITCH ENGINE</h1>
       </div>
       
       <div class="header-controls">
@@ -66,7 +66,8 @@
               <span>▶ PRESENT</span>
               <span class="key-badge">F</span>
             </button>
-            <button id="btn-export" class="btn btn-action btn-export" title="Print/Export to PDF">📥 EXPORT</button>
+            <button id="btn-export" class="btn btn-action btn-export" title="Print/Export to PDF">📥 EXPORT PDF</button>
+            <button id="btn-export-html" class="btn btn-action btn-export-html" title="Export as Standalone HTML file">📦 OFFLINE HTML</button>
             <button id="btn-audio-deck" class="btn btn-action btn-deck" title="Open Synthesizer Audio Deck">🎛️ AUDIO DECK</button>
           </div>
         </div>
@@ -96,6 +97,9 @@
           <button class="btn-inject" data-inject="pacing" title="Insert an interactive pacing curve chart">📈 PACING CHART</button>
           <button class="btn-inject" data-inject="state" title="Insert an interactive state machine diagram">🤖 STATE FLOW</button>
           <button class="btn-inject" data-inject="card" title="Insert a 3D tilting feature card">🃏 3D CARD</button>
+          <button class="btn-inject" data-inject="formula" title="Insert a formula sandbox calculator">📊 FORMULA</button>
+          <button class="btn-inject" data-inject="loot" title="Insert a loot chest roll table">📦 LOOT CHEST</button>
+          <button class="btn-inject" data-inject="roadmap" title="Insert a milestone roadmap timeline">📅 ROADMAP</button>
         </div>
       </section>
 

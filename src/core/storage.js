@@ -48,13 +48,22 @@ export const DEMO_TEMPLATE = `# CYBER-PULSE: NEON RUNNER
 
 ---
 
-# ROADMAP & METRICS
-## Iteration Milestones
-*   **Prototype V1** (Week 4): Physics blockout and movement mechanics validation.
-*   **Alpha Build** (Week 8): Card systems and combat loop integration.
-*   **Beta Demo** (Week 12): Full level pacing and polished audiovisual cue systems.
+# GAME BALANCE SANDBOX
+## Playable Weapon Damage & Loot Tables
+- **Damage Formula**: Adjust variables below to test combat scaling.
+- **Chest Simulator**: Run probability rolling simulation to log real-time drops.
 
-**Target platforms**: PC (Steam), Nintendo Switch.
+[sandbox: formula | Damage = ATK * 1.5 - DEF | ATK: 80, DEF: 35]
+
+[sandbox: loot | Common: 60, Rare: 25, Epic: 12, Legendary: 3]
+
+---
+
+# PRODUCTION ROADMAP
+## Interactive Project Milestones
+- Click nodes below to inspect objectives, checklists, and timelines.
+
+[roadmap: Concept Pitch (Design loop layout & budget, Q1) -> Prototype (Evasion traversal validation, Q2) -> Alpha Build (Cards systems & bot AI loop, Q3) -> Launch Demo (Pacing polish & launch, Q4)]
 `;
 
 export function saveDraft(markdownText) {

@@ -434,6 +434,16 @@ body {
   box-shadow: var(--shadow-glow-pink);
 }
 
+.btn-export-html {
+  border-color: var(--border-color);
+  color: var(--text-main);
+}
+.btn-export-html:hover {
+  border-color: var(--text-accent);
+  color: var(--text-accent);
+  box-shadow: var(--shadow-glow);
+}
+
 .btn-deck {
   border-color: var(--border-color);
   color: var(--text-muted);
@@ -903,6 +913,385 @@ body.live-solo .slide-container {
   background: var(--text-accent);
   cursor: pointer;
   box-shadow: var(--shadow-glow);
+}
+
+/* 4. Interactive Sandbox Playgrounds (Formulas & Loot Drops) */
+.sandbox-container {
+  margin: 20px 0;
+  width: 100%;
+}
+.sandbox-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-glow);
+}
+.sandbox-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(var(--accent-rgb), 0.1);
+  padding-bottom: 8px;
+}
+.sandbox-header .title {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-accent);
+}
+.sandbox-header .status {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+.formula-display-box {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(var(--accent-rgb), 0.15);
+  border-radius: var(--border-radius-sm);
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.formula-expr {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+.accent-expr {
+  color: var(--text-accent-secondary);
+  font-weight: bold;
+}
+.formula-output {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.output-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.output-val {
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-accent);
+  text-shadow: var(--shadow-glow);
+}
+.sandbox-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+.sandbox-slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sandbox-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+.var-name {
+  color: var(--text-main);
+  font-weight: 600;
+}
+.var-val {
+  color: var(--text-accent-secondary);
+}
+.sandbox-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: var(--border-color);
+  outline: none;
+  border-radius: 2px;
+}
+.sandbox-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-accent-secondary);
+  cursor: pointer;
+  box-shadow: var(--shadow-glow);
+  transition: transform 0.1s ease;
+}
+.sandbox-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
+}
+
+/* Loot Sandbox */
+.loot-bar-distribution {
+  display: flex;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+.loot-bar-segment {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+.loot-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: var(--border-radius-sm);
+  padding: 12px;
+  border: 1px solid rgba(var(--accent-rgb), 0.05);
+}
+.loot-stat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+}
+.loot-rarity {
+  font-weight: bold;
+}
+.loot-pct {
+  color: var(--text-main);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.loot-rolled-count {
+  color: var(--text-muted);
+}
+.loot-simulation-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.loot-log {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  height: 90px;
+  padding: 10px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.log-line {
+  color: #00ff66;
+  text-shadow: 0 0 2px rgba(0, 255, 102, 0.3);
+}
+.btn-roll-loot {
+  width: 100%;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  padding: 10px;
+}
+
+/* 5. Interactive Timelines & Roadmaps */
+.roadmap-container {
+  margin: 20px 0;
+  width: 100%;
+}
+.roadmap-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: var(--shadow-glow);
+}
+.roadmap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(var(--accent-rgb), 0.1);
+  padding-bottom: 8px;
+}
+.roadmap-header .title {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-accent);
+}
+.roadmap-header .status {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-accent-secondary);
+  background: rgba(var(--accent-secondary-rgb), 0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(var(--accent-secondary-rgb), 0.2);
+}
+.roadmap-timeline-track {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0 10px 0;
+  margin: 0 10px;
+}
+.timeline-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--border-color);
+  transform: translateY(-50%);
+  z-index: 1;
+}
+.roadmap-node {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.node-ring {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--bg-panel);
+  border: 2px solid var(--border-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all var(--transition-fast);
+}
+.node-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border-color);
+  transition: all var(--transition-fast);
+}
+.node-ring:hover {
+  border-color: var(--text-accent);
+  box-shadow: var(--shadow-glow);
+}
+.roadmap-node.active .node-ring {
+  border-color: var(--text-accent-secondary);
+  box-shadow: 0 0 10px rgba(var(--accent-secondary-rgb), 0.5);
+}
+.roadmap-node.active .node-dot {
+  background: var(--text-accent-secondary);
+  box-shadow: 0 0 6px rgba(var(--accent-secondary-rgb), 0.8);
+}
+.node-label {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: 8px;
+  text-align: center;
+  transition: color var(--transition-fast);
+}
+.node-date {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.roadmap-node.active .node-label {
+  color: var(--text-main);
+  text-shadow: 0 0 2px var(--text-main);
+}
+.roadmap-node:hover .node-label {
+  color: var(--text-accent);
+}
+.roadmap-details-box {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.roadmap-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed rgba(var(--accent-rgb), 0.1);
+  padding-bottom: 6px;
+}
+.roadmap-details-header h3 {
+  font-family: var(--font-header);
+  font-size: 1rem;
+  color: var(--text-main);
+}
+.phase-date {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-accent-secondary);
+}
+.roadmap-details-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hud-label-dim {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+.deliverable-text {
+  font-size: 0.8rem;
+  color: var(--text-main);
+}
+.roadmap-checklist {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.roadmap-checklist li {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.check-box {
+  font-size: 0.7rem;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+.check-box.checked {
+  background: rgba(var(--accent-secondary-rgb), 0.15);
+  border-color: var(--text-accent-secondary);
+  color: var(--text-accent-secondary);
 }
 
 /* ==========================================================================

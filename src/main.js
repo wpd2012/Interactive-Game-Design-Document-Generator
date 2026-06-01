@@ -6,6 +6,8 @@ import { AudioEngine } from './core/audio.js';
 import { renderLoops } from './components/loop.js';
 import { renderPacingGraphs } from './components/pacing.js';
 import { renderStateMachines } from './components/stateMachine.js';
+import { renderSandboxes } from './components/sandbox.js';
+import { renderRoadmaps } from './components/roadmap.js';
 import { saveDraft, loadDraft, DEMO_TEMPLATE } from './core/storage.js';
 
 // Application State
@@ -31,6 +33,7 @@ const toggleEditorBtn = document.getElementById('toggle-editor');
 const toggleDocBtn = document.getElementById('toggle-doc');
 const btnFullscreen = document.getElementById('btn-fullscreen');
 const btnExport = document.getElementById('btn-export');
+const btnExportHtml = document.getElementById('btn-export-html');
 const btnTemplate = document.getElementById('btn-template');
 
 const audioModal = document.getElementById('audio-modal');
@@ -59,6 +62,8 @@ function renderSlides() {
   renderLoops(slideContainer);
   renderPacingGraphs(slideContainer);
   renderStateMachines(slideContainer);
+  renderSandboxes(slideContainer);
+  renderRoadmaps(slideContainer);
   initialize3DTilts();
 }
 
@@ -141,6 +146,15 @@ function injectMarkup(type) {
       break;
     case 'card':
       injectionText = '\n[card: Feature Title | Visual descriptions of custom game systems.]\n';
+      break;
+    case 'formula':
+      injectionText = '\n[sandbox: formula | Damage = ATK * 1.5 - DEF | ATK: 80, DEF: 30]\n';
+      break;
+    case 'loot':
+      injectionText = '\n[sandbox: loot | Common: 60, Rare: 25, Epic: 12, Legendary: 3]\n';
+      break;
+    case 'roadmap':
+      injectionText = '\n[roadmap: Concept (Mechanic Pitch, Q1) -> Prototype (Core Mechanics, Q2) -> Alpha (Checklist & Testing, Q3) -> Release (Launch, Q4)]\n';
       break;
   }
   
@@ -341,6 +355,10 @@ btnExport.addEventListener('click', () => {
 });
 btnExport.addEventListener('mouseenter', () => AudioEngine.playHover());
 
+// Standalone HTML Export
+btnExportHtml.addEventListener('click', exportStandaloneHTML);
+btnExportHtml.addEventListener('mouseenter', () => AudioEngine.playHover());
+
 // Template Reloader
 btnTemplate.addEventListener('click', () => {
   if (confirm("Reset layout with demo GDD? Your unsaved draft will be replaced.")) {
@@ -436,6 +454,97 @@ paramClickWave.addEventListener('change', (e) => {
   AudioEngine.config.click.type = e.target.value;
 });
 btnTestClick.addEventListener('click', () => AudioEngine.playClick());
+
+// ==========================================================================
+// STANDALONE OFFLINE HTML EXPORT
+// ==========================================================================
+async function exportStandaloneHTML() {
+  updateStatusHUD("BUNDLING OFFLINE GDD...");
+  AudioEngine.playClick();
+  
+  try {
+    // 1. Fetch current stylesheet content
+    let cssContent = '';
+    const styleSheets = Array.from(document.styleSheets);
+    for (const sheet of styleSheets) {
+      try {
+        if (sheet.href) {
+          const res = await fetch(sheet.href);
+          cssContent += await res.text();
+        } else {
+          const rules = Array.from(sheet.cssRules);
+          cssContent += rules.map(rule => rule.cssText).join('\n');
+        }
+      } catch (e) {
+        console.warn('Could not read stylesheet:', e);
+      }
+    }
+    
+    // 2. Fetch main script content
+    let jsContent = '';
+    const scripts = Array.from(document.querySelectorAll('script'));
+    let mainScriptUrl = '';
+    for (const script of scripts) {
+      const src = script.getAttribute('src');
+      if (src && (src.includes('assets/index') || src.includes('src/main.js') || script.type === 'module')) {
+        mainScriptUrl = src;
+        break;
+      }
+    }
+    
+    if (mainScriptUrl) {
+      const res = await fetch(mainScriptUrl);
+      jsContent = await res.text();
+    } else {
+      jsContent = 'console.error("Main script bundle not found during export.");';
+    }
+    
+    // 3. Assemble HTML
+    const currentMarkdown = markdownInput.value;
+    let indexHtml = '';
+    try {
+      const indexRes = await fetch('./index.html');
+      indexHtml = await indexRes.text();
+    } catch (e) {
+      indexHtml = `<!DOCTYPE html><html>${document.documentElement.innerHTML}</html>`;
+    }
+    
+    // Prefill Markdown inside the template's textarea
+    const textareaRegex = /<textarea id="markdown-input"[^>]*>([\s\S]*?)<\/textarea>/;
+    const safeEscapedMarkdown = currentMarkdown
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    indexHtml = indexHtml.replace(textareaRegex, `<textarea id="markdown-input" spellcheck="false" placeholder="Write your pitch slides in markdown... Use '---' to separate slides.">${safeEscapedMarkdown}</textarea>`);
+    
+    // Remove reference to external stylesheet and script
+    indexHtml = indexHtml.replace(/<link rel="stylesheet" href="[^"]+">/g, '');
+    indexHtml = indexHtml.replace(/<script type="module" src="[^"]+"><\/script>/g, '');
+    
+    // Inject style content into head
+    indexHtml = indexHtml.replace('</head>', `<style>${cssContent}</style></head>`);
+    
+    // Inject script content into body
+    indexHtml = indexHtml.replace('</body>', `<script type="module">${jsContent}</script></body>`);
+    
+    // 4. Download Trigger
+    const blob = new Blob([indexHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'interactive_game_design_document.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    AudioEngine.playSuccess();
+    updateStatusHUD("OFFLINE GDD EXPORTED SUCCESS");
+  } catch (err) {
+    console.error('Error during HTML export:', err);
+    updateStatusHUD("EXPORT ERROR: BUNDLING FAILED");
+  }
+}
 
 // ==========================================================================
 // SYSTEM INITIATION
