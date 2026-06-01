@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cyberpunk" data-crt="true" data-audio="true">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playable GDD & Pitch Deck Engine</title>
+  <!-- Google Fonts: Inter for UI, Outfit for headers, JetBrains Mono for code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/Interactive-Game-Design-Document-Generator/assets/index-CAtlGjr3.js"></script>
+  <link rel="stylesheet" crossorigin href="/Interactive-Game-Design-Document-Generator/assets/index-lgyOr6_z.css">
+</head>
+<body>
+  <!-- CRT Screen Filter Layer -->
+  <div class="crt-overlay"></div>
+  <div class="crt-scanlines"></div>
+
+  <!-- Audio Interaction Overlay (Required for Web Audio API start) -->
+  <div id="audio-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h2 class="glitch-text" data-text="INITIALIZING SYSTEM">INITIALIZING SYSTEM</h2>
+      <p>This engine uses procedural synthesis (Web Audio API) for immersive retro sound effects.</p>
+      <button id="btn-enable-audio" class="btn btn-primary">INITIALIZE CUE ENGINE</button>
+    </div>
+  </div>
+
+  <div class="app-container">
+    <!-- Header / HUD Panel -->
+    <header class="app-header">
+      <div class="header-logo">
+        <span class="logo-icon">🎮</span>
+        <h1 class="logo-title">PLAYABLE GDD & PITCH ENGINE</h1>
+      </div>
+      
+      <div class="header-controls">
+        <!-- Theme Selectors -->
+        <div class="control-group">
+          <label>THEME</label>
+          <div class="segmented-control">
+            <button class="theme-btn active" data-set-theme="cyberpunk">CYBERPUNK</button>
+            <button class="theme-btn" data-set-theme="cozy">COZY</button>
+            <button class="theme-btn" data-set-theme="minimalist">MINIMAL</button>
+          </div>
+        </div>
+
+        <!-- Hardware Toggles -->
+        <div class="control-group">
+          <label>TOGGLES</label>
+          <div class="toggle-buttons">
+            <button id="toggle-crt" class="toggle-btn active" title="Toggle CRT Screen Scanlines">CRT</button>
+            <button id="toggle-audio" class="toggle-btn active" title="Toggle Synthesized Audio">SOUND</button>
+          </div>
+        </div>
+
+        <!-- Presentation Controls -->
+        <div class="control-group">
+          <div style="display: flex; gap: 8px;">
+            <button id="btn-fullscreen" class="btn btn-action" title="Enter Presenter Mode (F)">
+              <span>PRESENT</span>
+              <span class="key-badge">F</span>
+            </button>
+            <button id="btn-export" class="btn btn-action" title="Print/Export to PDF">EXPORT</button>
+            <button id="btn-audio-deck" class="btn btn-action" title="Open Synthesizer Audio Deck">🎛️ AUDIO DECK</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace Split Pane -->
+    <main class="workspace-split">
+      <!-- Left Panel: Markdown Editor -->
+      <section class="editor-pane">
+        <div class="panel-header">
+          <span class="panel-title">GDD SOURCE (MARKDOWN)</span>
+          <div class="editor-actions">
+            <button id="btn-template" class="btn-text">LOAD DEMO TEMPLATE</button>
+          </div>
+        </div>
+        
+        <div class="editor-container">
+          <textarea id="markdown-input" spellcheck="false" placeholder="Write your pitch slides in markdown... Use '---' to separate slides."></textarea>
+        </div>
+
+        <!-- Component Injector Tray -->
+        <div class="injector-tray">
+          <span class="tray-label">QUICK INJECT:</span>
+          <button class="btn-inject" data-inject="slide" title="Insert a new slide separator">➕ NEW SLIDE</button>
+          <button class="btn-inject" data-inject="loop" title="Insert an interactive core game loop">🔄 CORE LOOP</button>
+          <button class="btn-inject" data-inject="pacing" title="Insert an interactive pacing curve chart">📈 PACING CHART</button>
+          <button class="btn-inject" data-inject="state" title="Insert an interactive state machine diagram">🤖 STATE FLOW</button>
+          <button class="btn-inject" data-inject="card" title="Insert a 3D tilting feature card">🃏 3D CARD</button>
+        </div>
+      </section>
+
+      <!-- Right Panel: Interactive Slide Presenter -->
+      <section class="preview-pane">
+        <div class="panel-header">
+          <span class="panel-title">LIVE PRESENTATION</span>
+          <div class="preview-status" id="preview-status">
+            <span class="pulse-indicator"></span> LIVE VIEW
+          </div>
+        </div>
+
+        <div class="presentation-wrapper" id="presentation-viewport">
+          <!-- Active Slide Render Area -->
+          <div id="slide-container" class="slide-container">
+            <!-- Dynamic slides will be injected here -->
+          </div>
+
+          <!-- Presenter HUD Navigation -->
+          <div class="presenter-hud">
+            <button id="prev-slide-btn" class="hud-nav-btn" title="Previous Slide (← / Space)">◀ PREV</button>
+            <div class="hud-progress">
+              <span id="current-slide-num">1</span>
+              <span class="hud-slash">/</span>
+              <span id="total-slides-num">1</span>
+            </div>
+            <button id="next-slide-btn" class="hud-nav-btn" title="Next Slide (→ / Backspace)">NEXT ▶</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Status HUD -->
+    <footer class="app-footer">
+      <div id="status-message">SYSTEM STANDBY</div>
+      <div class="footer-meta">PRESS <kbd>←</kbd> <kbd>→</kbd> TO NAVIGATE SLIDES • <kbd>ESC</kbd> TO EXIT PRESENTATION</div>
+    </footer>
+  </div>
+
+  <!-- Audio Deck Drawer Component -->
+  <aside id="audio-deck-drawer" class="audio-deck-drawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title">SYNTH AUDIO DECK</h3>
+      <button id="btn-close-drawer" class="btn-close-drawer" title="Close Drawer">&times;</button>
+    </div>
+    
+    <div class="drawer-section">
+      <h4 class="drawer-section-title">HOVER BLIP PARAMETERS</h4>
+      <div class="synth-parameter">
+        <label>Base Frequency: <span id="val-hover-freq">880 Hz</span></label>
+        <input type="range" id="param-hover-freq" min="200" max="2000" step="10" value="880">
+      </div>
+      <div class="synth-parameter">
+        <label>Decay Duration: <span id="val-hover-decay">0.06s</span></label>
+        <input type="range" id="param-hover-decay" min="0.01" max="0.5" step="0.01" value="0.06">
+      </div>
+      <div class="synth-parameter">
+        <label>Waveform Type</label>
+        <select id="param-hover-wave" class="synth-select">
+          <option value="sine" selected>sine</option>
+          <option value="triangle">triangle</option>
+          <option value="square">square</option>
+          <option value="sawtooth">sawtooth</option>
+        </select>
+      </div>
+      <button id="btn-test-hover" class="btn-test-sound">TEST HOVER BLIP</button>
+    </div>
+
+    <div class="drawer-section">
+      <h4 class="drawer-section-title">CLICK SFX PARAMETERS</h4>
+      <div class="synth-parameter">
+        <label>Base Frequency: <span id="val-click-freq">400 Hz</span></label>
+        <input type="range" id="param-click-freq" min="100" max="1500" step="10" value="400">
+      </div>
+      <div class="synth-parameter">
+        <label>Decay Duration: <span id="val-click-decay">0.10s</span></label>
+        <input type="range" id="param-click-decay" min="0.02" max="0.8" step="0.01" value="0.10">
+      </div>
+      <div class="synth-parameter">
+        <label>Waveform Type</label>
+        <select id="param-click-wave" class="synth-select">
+          <option value="triangle" selected>triangle</option>
+          <option value="sine">sine</option>
+          <option value="square">square</option>
+          <option value="sawtooth">sawtooth</option>
+        </select>
+      </div>
+      <button id="btn-test-click" class="btn-test-sound">TEST CLICK SFX</button>
+    </div>
+  </aside>
+
+</body>
+</html>
