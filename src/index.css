@@ -370,18 +370,28 @@ body {
   width: 60%;
   background: var(--bg-app);
   flex-grow: 1;
-  transition: width var(--transition-smooth);
+  transition: width var(--transition-smooth), opacity var(--transition-smooth), visibility var(--transition-smooth);
 }
 
-/* Collapsed Editor Layout State */
-body.editor-collapsed .editor-pane {
+/* Solo Mode Layout States */
+body.live-solo .editor-pane {
   width: 0% !important;
   opacity: 0;
   visibility: hidden;
   border-right: none;
 }
-body.editor-collapsed .preview-pane {
+body.live-solo .preview-pane {
   width: 100% !important;
+}
+
+body.markdown-solo .preview-pane {
+  width: 0% !important;
+  opacity: 0;
+  visibility: hidden;
+}
+body.markdown-solo .editor-pane {
+  width: 100% !important;
+  border-right: none;
 }
 
 /* Panel Headers */
@@ -520,7 +530,7 @@ body.editor-collapsed .preview-pane {
   overflow-y: auto;
   transition: transform var(--transition-smooth), max-width var(--transition-smooth);
 }
-body.editor-collapsed .slide-container {
+body.live-solo .slide-container {
   max-width: 1180px;
 }
 [data-theme="cozy"] .slide-container {
@@ -1210,51 +1220,5 @@ body.drawer-open .audio-deck-drawer {
   color: var(--text-accent-secondary);
 }
 
-/* ==========================================================================
-   DOCUMENT MODE LAYOUT OVERRIDES
-   ========================================================================== */
-body.document-mode .slide-container {
-  display: block !important;
-  aspect-ratio: auto !important;
-  height: 100% !important;
-  max-height: 100% !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 16px !important;
-  overflow-y: auto !important;
-}
 
-body.document-mode .slide-card-page {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-md);
-  padding: 40px;
-  margin: 0 auto 32px auto;
-  width: 100%;
-  max-width: 1000px;
-  aspect-ratio: 16/9;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  position: relative;
-  box-shadow: var(--shadow-glow), 0 6px 20px rgba(0,0,0,0.15);
-  box-sizing: border-box;
-}
-
-body.document-mode .slide-card-page::after {
-  content: "PAGE " attr(data-slide-page);
-  position: absolute;
-  bottom: 16px;
-  right: 24px;
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  letter-spacing: 0.1em;
-  opacity: 0.5;
-}
-
-[data-theme="cozy"] body.document-mode .slide-card-page {
-  box-shadow: 0 4px 15px rgba(124, 74, 36, 0.05);
-}
 

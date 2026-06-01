@@ -12,7 +12,8 @@ import { saveDraft, loadDraft, DEMO_TEMPLATE } from './core/storage.js';
 let currentSlideIndex = 0;
 let slidesHTML = [];
 let autosaveTimeout = null;
-let isDocumentMode = false;
+let isLiveSolo = false;
+let isMarkdownSolo = false;
 
 // DOM Element Selectors
 const markdownInput = document.getElementById('markdown-input');
@@ -51,23 +52,10 @@ function renderSlides() {
   }
   currentSlideNum.textContent = currentSlideIndex + 1;
   
-  if (isDocumentMode) {
-    // Hide pagination HUD and show all slides stacked vertically
-    document.body.classList.add('document-mode');
-    
-    // Map all slides into card slots
-    const documentHTML = slidesHTML.map((slideHTML, idx) => {
-      return `<div class="slide-card-page" data-slide-page="${idx + 1}">${slideHTML}</div>`;
-    }).join('');
-    
-    slideContainer.innerHTML = documentHTML;
-  } else {
-    // Show single slide card
-    document.body.classList.remove('document-mode');
-    slideContainer.innerHTML = slidesHTML[currentSlideIndex] || '';
-  }
+  // Show single slide card
+  slideContainer.innerHTML = slidesHTML[currentSlideIndex] || '';
   
-  // Inject Dynamic Interactive Components (runs on single slide or all of them)
+  // Inject Dynamic Interactive Components
   renderLoops(slideContainer);
   renderPacingGraphs(slideContainer);
   renderStateMachines(slideContainer);
@@ -195,9 +183,9 @@ function updateStatusHUD(msg) {
 
 // Key Bindings
 document.addEventListener('keydown', (e) => {
-  // Disable slide controls if user is writing in the editor or in GDD Document Mode
+  // Disable slide controls if user is writing in the editor or GDD Markdown Solo is active
   if (document.activeElement === markdownInput) return;
-  if (isDocumentMode) return; // Skip arrows pagination inside scroll view
+  if (isMarkdownSolo) return; // Skip arrows pagination if only GDD source is visible
   
   if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
     e.preventDefault();
@@ -257,42 +245,66 @@ themeButtons.forEach(btn => {
   btn.addEventListener('mouseenter', () => AudioEngine.playHover());
 });
 
-// Toggle Sidebar Editor Pane
+// Toggle Sidebar Editor Pane (Solos Live Presentation view)
 toggleEditorBtn.addEventListener('click', () => {
-  const isCollapsed = document.body.classList.toggle('editor-collapsed');
-  toggleEditorBtn.classList.toggle('active', isCollapsed);
-  AudioEngine.playClick();
+  isLiveSolo = !isLiveSolo;
+  document.body.classList.toggle('live-solo', isLiveSolo);
+  toggleEditorBtn.classList.toggle('active', isLiveSolo);
   
-  // Re-draw slides after layouts finish animations so SVG/Canvases scale to width
-  setTimeout(() => {
-    renderSlides();
-  }, 320);
-});
-toggleEditorBtn.addEventListener('mouseenter', () => AudioEngine.playHover());
-
-// Toggle Slide Mode vs GDD Document Mode
-toggleDocBtn.addEventListener('click', () => {
-  isDocumentMode = !isDocumentMode;
-  toggleDocBtn.classList.toggle('active', isDocumentMode);
-  AudioEngine.playClick();
+  if (isLiveSolo) {
+    isMarkdownSolo = false;
+    document.body.classList.remove('markdown-solo');
+    toggleDocBtn.classList.remove('active');
+  }
   
-  // Trigger screen glitch visual aberration during mode transition
+  // Trigger screen glitch visual aberration during layout transition
   document.body.classList.add('glitch-active');
   setTimeout(() => {
     document.body.classList.remove('glitch-active');
   }, 220);
   
-  renderSlides();
+  AudioEngine.playClick();
   
-  // Disable navigation buttons in document mode
-  const presenterHud = document.querySelector('.presenter-hud');
-  if (isDocumentMode) {
-    presenterHud.style.display = 'none';
-    updateStatusHUD("GDD DOCUMENT READER ACTIVE");
-  } else {
-    presenterHud.style.display = '';
-    updateStatusHUD(`VIEWING SLIDE ${currentSlideIndex + 1}`);
+  // Re-draw slides after layouts finish transitions so canvases adjust widths
+  setTimeout(() => {
+    renderSlides();
+    if (isLiveSolo) {
+      updateStatusHUD("LIVE PRESENTATION MAXIMIZED");
+    } else {
+      updateStatusHUD(`VIEWING SLIDE ${currentSlideIndex + 1}`);
+    }
+  }, 320);
+});
+toggleEditorBtn.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// Toggle GDD Source Editor (Solos Markdown side view)
+toggleDocBtn.addEventListener('click', () => {
+  isMarkdownSolo = !isMarkdownSolo;
+  document.body.classList.toggle('markdown-solo', isMarkdownSolo);
+  toggleDocBtn.classList.toggle('active', isMarkdownSolo);
+  
+  if (isMarkdownSolo) {
+    isLiveSolo = false;
+    document.body.classList.remove('live-solo');
+    toggleEditorBtn.classList.remove('active');
   }
+  
+  // Trigger screen glitch visual aberration
+  document.body.classList.add('glitch-active');
+  setTimeout(() => {
+    document.body.classList.remove('glitch-active');
+  }, 220);
+  
+  AudioEngine.playClick();
+  
+  setTimeout(() => {
+    renderSlides();
+    if (isMarkdownSolo) {
+      updateStatusHUD("GDD SOURCE CODE MAXIMIZED");
+    } else {
+      updateStatusHUD(`VIEWING SLIDE ${currentSlideIndex + 1}`);
+    }
+  }, 320);
 });
 toggleDocBtn.addEventListener('mouseenter', () => AudioEngine.playHover());
 
