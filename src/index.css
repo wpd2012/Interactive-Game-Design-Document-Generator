@@ -302,12 +302,24 @@ body {
   width: 40%;
   border-right: 1px solid var(--border-color);
   background: var(--bg-panel);
-  transition: width var(--transition-smooth);
+  transition: width var(--transition-smooth), opacity var(--transition-smooth), visibility var(--transition-smooth);
 }
 .preview-pane {
   width: 60%;
   background: var(--bg-app);
   flex-grow: 1;
+  transition: width var(--transition-smooth);
+}
+
+/* Collapsed Editor Layout State */
+body.editor-collapsed .editor-pane {
+  width: 0% !important;
+  opacity: 0;
+  visibility: hidden;
+  border-right: none;
+}
+body.editor-collapsed .preview-pane {
+  width: 100% !important;
 }
 
 /* Panel Headers */
@@ -432,7 +444,7 @@ body {
 /* Active Slide Container */
 .slide-container {
   width: 100%;
-  max-width: 900px;
+  max-width: 1050px;
   aspect-ratio: 16/9;
   background: var(--bg-panel);
   border: 1px solid var(--border-color);
@@ -444,7 +456,10 @@ body {
   position: relative;
   box-shadow: var(--shadow-glow), 0 10px 30px rgba(0,0,0,0.3);
   overflow-y: auto;
-  transition: transform var(--transition-smooth);
+  transition: transform var(--transition-smooth), max-width var(--transition-smooth);
+}
+body.editor-collapsed .slide-container {
+  max-width: 1180px;
 }
 [data-theme="cozy"] .slide-container {
   box-shadow: 0 8px 24px rgba(124, 74, 36, 0.06);
@@ -511,7 +526,7 @@ body {
 
 .slide-content h1 {
   font-family: var(--font-display);
-  font-size: 2.4rem;
+  font-size: clamp(2rem, 3.2vw, 2.7rem);
   font-weight: 800;
   margin-bottom: 16px;
   letter-spacing: -0.02em;
@@ -528,14 +543,14 @@ body {
 
 .slide-content h2 {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 1.8vw, 1.55rem);
   font-weight: 600;
   margin-bottom: 12px;
   color: var(--text-accent-secondary);
 }
 
 .slide-content p {
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 1.2vw, 1.05rem);
   line-height: 1.6;
   margin-bottom: 16px;
   color: var(--text-main);
@@ -549,7 +564,7 @@ body {
 }
 .slide-content li {
   margin-bottom: 8px;
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 1.1vw, 0.98rem);
   color: var(--text-main);
 }
 .slide-content li strong {

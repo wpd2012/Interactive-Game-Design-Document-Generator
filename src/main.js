@@ -25,6 +25,7 @@ const statusMessage = document.getElementById('status-message');
 const themeButtons = document.querySelectorAll('[data-set-theme]');
 const toggleCrtBtn = document.getElementById('toggle-crt');
 const toggleAudioBtn = document.getElementById('toggle-audio');
+const toggleEditorBtn = document.getElementById('toggle-editor');
 const btnFullscreen = document.getElementById('btn-fullscreen');
 const btnExport = document.getElementById('btn-export');
 const btnTemplate = document.getElementById('btn-template');
@@ -239,6 +240,19 @@ themeButtons.forEach(btn => {
   
   btn.addEventListener('mouseenter', () => AudioEngine.playHover());
 });
+
+// Toggle Sidebar Editor Pane
+toggleEditorBtn.addEventListener('click', () => {
+  const isCollapsed = document.body.classList.toggle('editor-collapsed');
+  toggleEditorBtn.classList.toggle('active', isCollapsed);
+  AudioEngine.playClick();
+  
+  // Re-draw slides after layouts finish animations so SVG/Canvases scale to width
+  setTimeout(() => {
+    renderSlides();
+  }, 320);
+});
+toggleEditorBtn.addEventListener('mouseenter', () => AudioEngine.playHover());
 
 // Toggles (CRT / AUDIO)
 toggleCrtBtn.addEventListener('click', () => {
