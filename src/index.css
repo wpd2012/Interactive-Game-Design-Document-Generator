@@ -978,12 +978,13 @@ body.live-solo .slide-container {
   height: 100vh !important;
 }
 .presentation-fullscreen .slide-container {
-  max-width: 1200px;
-  height: 70vh;
-  font-size: 1.2rem;
+  max-width: 1750px;
+  width: 92vw;
+  height: 80vh;
+  font-size: 1.4rem;
 }
 .presentation-fullscreen .presenter-hud {
-  bottom: 40px;
+  bottom: 30px;
 }
 
 /* ==========================================================================
