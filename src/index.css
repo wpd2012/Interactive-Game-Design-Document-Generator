@@ -931,8 +931,8 @@ body.live-solo .slide-container {
 }
 .loop-node-text {
   font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 12.5px;
+  font-weight: 800;
   fill: var(--text-main);
   text-anchor: middle;
   dominant-baseline: middle;
@@ -942,7 +942,7 @@ body.live-solo .slide-container {
 .loop-node:hover .loop-node-box {
   stroke: var(--text-accent);
   fill: var(--text-accent);
-  filter: drop-shadow(0 0 10px rgba(var(--accent-rgb), 0.5));
+  filter: drop-shadow(0 0 3px rgba(var(--accent-rgb), 0.4));
 }
 .loop-node:hover .loop-node-text {
   fill: var(--bg-app) !important;
