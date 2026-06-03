@@ -923,7 +923,7 @@ body.live-solo .slide-container {
   height: auto;
 }
 .loop-node-box {
-  fill: var(--bg-panel);
+  fill: #ffffff;
   stroke: var(--border-color);
   stroke-width: 2px;
   transition: all var(--transition-fast);
@@ -933,7 +933,7 @@ body.live-solo .slide-container {
   font-family: var(--font-mono);
   font-size: 12.5px;
   font-weight: 800;
-  fill: var(--text-main);
+  fill: rgba(0, 0, 0, 0.85);
   text-anchor: middle;
   dominant-baseline: middle;
   pointer-events: none;
@@ -946,10 +946,6 @@ body.live-solo .slide-container {
 }
 .loop-node:hover .loop-node-text {
   fill: var(--bg-app) !important;
-}
-[data-theme="frost"] .loop-node-box,
-[data-theme="cozy"] .loop-node-box {
-  fill: #ffffff;
 }
 [data-theme="frost"] .loop-node:hover .loop-node-text,
 [data-theme="cozy"] .loop-node:hover .loop-node-text {
