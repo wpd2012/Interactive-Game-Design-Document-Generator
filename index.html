@@ -81,11 +81,14 @@
         <div class="panel-header">
           <span class="panel-title">GDD SOURCE (MARKDOWN)</span>
           <div class="editor-actions">
-            <button id="btn-copy-md" class="btn-text" title="Copy markdown to clipboard">📋 COPY</button>
-            <span style="color: var(--text-muted); opacity: 0.3; margin: 0 4px;">|</span>
-            <button id="btn-download-md" class="btn-text" title="Download markdown as file">💾 DOWNLOAD MD</button>
-            <span style="color: var(--text-muted); opacity: 0.3; margin: 0 4px;">|</span>
-            <button id="btn-template" class="btn-text">LOAD DEMO TEMPLATE</button>
+            <div class="action-dropdown-container">
+              <select id="editor-actions-select" class="editor-actions-select" aria-label="Editor actions">
+                <option value="" disabled selected>🛠️ ACTIONS</option>
+                <option value="copy">📋 COPY SOURCE</option>
+                <option value="download">💾 DOWNLOAD .MD</option>
+                <option value="template">🔄 LOAD DEMO GDD</option>
+              </select>
+            </div>
           </div>
         </div>
         

@@ -34,9 +34,7 @@ const toggleDocBtn = document.getElementById('toggle-doc');
 const btnFullscreen = document.getElementById('btn-fullscreen');
 const btnExport = document.getElementById('btn-export');
 const btnExportHtml = document.getElementById('btn-export-html');
-const btnTemplate = document.getElementById('btn-template');
-const btnCopyMd = document.getElementById('btn-copy-md');
-const btnDownloadMd = document.getElementById('btn-download-md');
+const editorActionsSelect = document.getElementById('editor-actions-select');
 
 const audioModal = document.getElementById('audio-modal');
 const btnEnableAudio = document.getElementById('btn-enable-audio');
@@ -361,64 +359,48 @@ btnExport.addEventListener('mouseenter', () => AudioEngine.playHover());
 btnExportHtml.addEventListener('click', exportStandaloneHTML);
 btnExportHtml.addEventListener('mouseenter', () => AudioEngine.playHover());
 
-// Copy Markdown to Clipboard
-btnCopyMd.addEventListener('click', () => {
-  navigator.clipboard.writeText(markdownInput.value)
-    .then(() => {
-      const originalText = btnCopyMd.innerHTML;
-      btnCopyMd.innerHTML = '✔ COPIED!';
-      btnCopyMd.style.color = 'var(--text-accent-secondary)';
-      AudioEngine.playSuccess();
-      setTimeout(() => {
-        btnCopyMd.innerHTML = originalText;
-        btnCopyMd.style.color = '';
-      }, 1500);
-    })
-    .catch(err => {
-      console.error('Could not copy text: ', err);
-      btnCopyMd.textContent = '❌ ERROR';
-      setTimeout(() => {
-        btnCopyMd.textContent = '📋 COPY';
-      }, 1500);
-    });
-});
-btnCopyMd.addEventListener('mouseenter', () => AudioEngine.playHover());
-
-// Download Markdown File
-btnDownloadMd.addEventListener('click', () => {
-  const currentMarkdown = markdownInput.value;
-  const blob = new Blob([currentMarkdown], { type: 'text/markdown' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'game_design_document.md';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+// Editor Actions Dropdown handler
+editorActionsSelect.addEventListener('change', (e) => {
+  const action = e.target.value;
+  if (!action) return;
   
-  const originalText = btnDownloadMd.innerHTML;
-  btnDownloadMd.innerHTML = '✔ DOWNLOADED!';
-  btnDownloadMd.style.color = 'var(--text-accent)';
-  AudioEngine.playSuccess();
-  setTimeout(() => {
-    btnDownloadMd.innerHTML = originalText;
-    btnDownloadMd.style.color = '';
-  }, 1500);
-});
-btnDownloadMd.addEventListener('mouseenter', () => AudioEngine.playHover());
-
-// Template Reloader
-btnTemplate.addEventListener('click', () => {
-  if (confirm("Reset layout with demo GDD? Your unsaved draft will be replaced.")) {
-    markdownInput.value = DEMO_TEMPLATE;
-    currentSlideIndex = 0;
+  if (action === 'copy') {
+    navigator.clipboard.writeText(markdownInput.value)
+      .then(() => {
+        AudioEngine.playSuccess();
+        updateStatusHUD("GDD SOURCE COPIED TO CLIPBOARD");
+      })
+      .catch(err => {
+        console.error('Could not copy text: ', err);
+      });
+  } else if (action === 'download') {
+    const currentMarkdown = markdownInput.value;
+    const blob = new Blob([currentMarkdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'game_design_document.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
     AudioEngine.playSuccess();
-    renderSlides();
-    triggerAutoSave();
+    updateStatusHUD("GDD MARKDOWN FILE DOWNLOADED");
+  } else if (action === 'template') {
+    if (confirm("Reset layout with demo GDD? Your unsaved draft will be replaced.")) {
+      markdownInput.value = DEMO_TEMPLATE;
+      currentSlideIndex = 0;
+      AudioEngine.playSuccess();
+      renderSlides();
+      triggerAutoSave();
+    }
   }
+  
+  // Reset select value to show placeholder
+  editorActionsSelect.value = '';
 });
-btnTemplate.addEventListener('mouseenter', () => AudioEngine.playHover());
+editorActionsSelect.addEventListener('mouseenter', () => AudioEngine.playHover());
 
 // Component Injectors Tray
 document.querySelectorAll('[data-inject]').forEach(btn => {

@@ -325,6 +325,50 @@ body {
   color: var(--text-accent);
 }
 
+/* Editor Actions Dropdown */
+.action-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+.editor-actions-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 1px solid rgba(var(--accent-secondary-rgb), 0.3);
+  color: var(--text-accent-secondary);
+  font-family: var(--font-ui);
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 4px 20px 4px 8px;
+  cursor: pointer;
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-fast);
+  outline: none;
+}
+.editor-actions-select:hover {
+  border-color: var(--text-accent-secondary);
+  background: rgba(var(--accent-secondary-rgb), 0.05);
+}
+.action-dropdown-container::after {
+  content: '▼';
+  font-size: 0.45rem;
+  color: var(--text-accent-secondary);
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.editor-actions-select option {
+  background: var(--bg-panel);
+  color: var(--text-main);
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+}
+.editor-actions-select option:disabled {
+  color: var(--text-muted);
+}
+
 /* Toggles */
 .toggle-buttons {
   display: flex;
