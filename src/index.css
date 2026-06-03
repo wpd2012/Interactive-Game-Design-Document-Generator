@@ -858,12 +858,12 @@ body.live-solo .slide-container {
   width: 100%;
 }
 .loop-diagram-svg {
-  max-width: 500px;
+  max-width: 600px;
   width: 100%;
   height: auto;
 }
 .loop-node-box {
-  fill: var(--bg-input);
+  fill: var(--bg-app);
   stroke: var(--border-color);
   stroke-width: 2px;
   transition: all var(--transition-fast);
@@ -871,14 +871,18 @@ body.live-solo .slide-container {
 }
 .loop-node:hover .loop-node-box {
   stroke: var(--text-accent);
-  fill: rgba(var(--accent-rgb), 0.05);
+  fill: var(--bg-input);
+  filter: drop-shadow(0 0 4px rgba(var(--accent-rgb), 0.25));
 }
-[data-theme="frost"] .loop-node-box {
+[data-theme="frost"] .loop-node-box,
+[data-theme="cozy"] .loop-node-box {
   fill: #ffffff;
 }
-[data-theme="frost"] .loop-node:hover .loop-node-box {
+[data-theme="frost"] .loop-node:hover .loop-node-box,
+[data-theme="cozy"] .loop-node:hover .loop-node-box {
   fill: #ffffff;
   stroke: var(--text-accent);
+  filter: drop-shadow(0 0 4px rgba(var(--accent-rgb), 0.15));
 }
 .loop-node-text {
   font-family: var(--font-mono);
