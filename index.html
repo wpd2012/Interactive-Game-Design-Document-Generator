@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="/Interactive-Game-Design-Document-Generator/assets/index-2He687s2.js"></script>
-  <link rel="stylesheet" crossorigin href="/Interactive-Game-Design-Document-Generator/assets/index-D261SL1W.css">
+  <script type="module" crossorigin src="/Interactive-Game-Design-Document-Generator/assets/index-t1Ie6Ial.js"></script>
+  <link rel="stylesheet" crossorigin href="/Interactive-Game-Design-Document-Generator/assets/index-DnQwchu7.css">
 </head>
 <body>
   <!-- CRT Screen Filter Layer -->
@@ -67,13 +67,16 @@
               <span>▶ PRESENT</span>
               <span class="key-badge">F</span>
             </button>
-            <div class="export-select-container">
-              <select id="export-actions-select" class="btn-export-select" aria-label="Export options">
-                <option value="" disabled selected>📥 EXPORT</option>
-                <option value="pdf">📄 PDF DOCUMENT</option>
-                <option value="html">📦 OFFLINE HTML</option>
-                <option value="markdown">📝 RAW MARKDOWN</option>
-              </select>
+            <div class="custom-dropdown" id="export-dropdown-container">
+              <button id="btn-export-trigger" class="btn btn-action dropdown-trigger" title="Export GDD Options">
+                <span>📥 EXPORT</span>
+                <span class="arrow-indicator">▼</span>
+              </button>
+              <div class="dropdown-menu" id="export-dropdown-menu">
+                <button class="dropdown-item" data-value="pdf">📄 PDF DOCUMENT</button>
+                <button class="dropdown-item" data-value="html">📦 OFFLINE HTML</button>
+                <button class="dropdown-item" data-value="markdown">📝 RAW MARKDOWN</button>
+              </div>
             </div>
             <button id="btn-audio-deck" class="btn btn-action btn-deck" title="Open Synthesizer Audio Deck">🎛️ AUDIO DECK</button>
           </div>
