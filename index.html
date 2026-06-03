@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="/Interactive-Game-Design-Document-Generator/assets/index-f1sSOcFw.js"></script>
-  <link rel="stylesheet" crossorigin href="/Interactive-Game-Design-Document-Generator/assets/index-UKRZgljY.css">
+  <script type="module" crossorigin src="/Interactive-Game-Design-Document-Generator/assets/index-2He687s2.js"></script>
+  <link rel="stylesheet" crossorigin href="/Interactive-Game-Design-Document-Generator/assets/index-D261SL1W.css">
 </head>
 <body>
   <!-- CRT Screen Filter Layer -->
@@ -67,8 +67,14 @@
               <span>▶ PRESENT</span>
               <span class="key-badge">F</span>
             </button>
-            <button id="btn-export" class="btn btn-action btn-export" title="Print/Export to PDF">📥 EXPORT PDF</button>
-            <button id="btn-export-html" class="btn btn-action btn-export-html" title="Export as Standalone HTML file">📦 OFFLINE HTML</button>
+            <div class="export-select-container">
+              <select id="export-actions-select" class="btn-export-select" aria-label="Export options">
+                <option value="" disabled selected>📥 EXPORT</option>
+                <option value="pdf">📄 PDF DOCUMENT</option>
+                <option value="html">📦 OFFLINE HTML</option>
+                <option value="markdown">📝 RAW MARKDOWN</option>
+              </select>
+            </div>
             <button id="btn-audio-deck" class="btn btn-action btn-deck" title="Open Synthesizer Audio Deck">🎛️ AUDIO DECK</button>
           </div>
         </div>
