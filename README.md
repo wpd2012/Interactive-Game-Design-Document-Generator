@@ -37,8 +37,8 @@ All sound effects are synthesized programmatically in real-time. The core oscill
 
 ## 📋 Comprehensive Feature Checklist
 
-- [x] **Core Presentation Compiler**: Split-pane live editor, LocalStorage autosave draft recovery, print-to-PDF styles, clipboard COPY utility, and raw `.md` download.
-- [x] **Offline Standalone Bundle Exporter**: Package your slide GDD, styles, and compiled Javascript engine into a single offline-capable `.html` file.
+- [x] **Core Presentation Compiler**: Split-pane live editor, LocalStorage autosave draft recovery, and pane solo modes.
+- [x] **Multi-Format Document Exporter**: A consolidated header dropdown to export slides to PDF, package a standalone offline HTML slide deck bundle, or download the raw `.md` source file.
 - [x] **Procedural DSP Synthesizer**: Custom frequency control, wave configurations, test triggers, and interactive sound deck drawer.
 - [x] **Aesthetic Rendering Pipeline**: CRT cathode overlay, vignette focus shadow, refresh rate screen flickers, and chromatic skew transitions.
 - [x] **Thematic Styles**: Cyberpunk, Synthwave Arcade, Frost Sci-Fi (glassmorphism), Steampunk Brass, Cozy RPG, and Minimalist theme engines.
@@ -107,9 +107,11 @@ this.config = {
 *   Implemented **Weighted Loot Chest Probability Simulators**.
 *   Implemented **Interactive Timeline Production Roadmaps**.
 *   Added **Standalone Offline HTML Exporter** (`📦 OFFLINE HTML`).
+*   Consolidated header export controls (PDF, Standalone HTML, raw Markdown) into a single **Export Actions Dropdown**.
 *   Added **Unified Editor Actions Dropdown** containing Copy Source, Download .md, and Load Demo templates.
 *   Re-engineered pacing canvas to use a high-DPI `ResizeObserver` layout tracking system.
 *   Added visual theme dropdown selection controls.
+*   Toned down CRT filter overlays, vignette shadows, and flickers to maximize readability of all document text.
 
 ### v1.2.0
 *   Implemented responsive font-clamping overlays.
