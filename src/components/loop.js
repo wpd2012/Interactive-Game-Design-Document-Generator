@@ -78,7 +78,7 @@ export function renderLoops(container) {
       svgContent += `
         <g class="loop-node" data-index="${idx}">
           <rect class="loop-node-box" x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" rx="6" ry="6" />
-          <text class="loop-node-text" x="${coord.x}" y="${coord.y}">${nodeText}</text>
+          <text class="loop-node-text" x="${coord.x}" y="${coord.y}">${nodeText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</text>
         </g>
       `;
     });
