@@ -15,11 +15,11 @@ export function renderLoops(container) {
     const numNodes = nodes.length;
     
     // SVG Settings
-    const width = 350;
-    const height = 350;
+    const width = 500;
+    const height = 320;
     const cx = width / 2;
     const cy = height / 2;
-    const r = 100; // Radius of the circle of nodes
+    const r = 90; // Radius of the circle of nodes
     
     let svgContent = `
       <svg class="loop-diagram-svg" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">

@@ -873,10 +873,17 @@ body.live-solo .slide-container {
   stroke: var(--text-accent);
   fill: rgba(var(--accent-rgb), 0.05);
 }
+[data-theme="frost"] .loop-node-box {
+  fill: #ffffff;
+}
+[data-theme="frost"] .loop-node:hover .loop-node-box {
+  fill: #ffffff;
+  stroke: var(--text-accent);
+}
 .loop-node-text {
   font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   fill: var(--text-main);
   text-anchor: middle;
   dominant-baseline: middle;
