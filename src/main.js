@@ -32,7 +32,8 @@ const toggleAudioBtn = document.getElementById('toggle-audio');
 const toggleEditorBtn = document.getElementById('toggle-editor');
 const toggleDocBtn = document.getElementById('toggle-doc');
 const btnFullscreen = document.getElementById('btn-fullscreen');
-const exportActionsSelect = document.getElementById('export-actions-select');
+const btnExportTrigger = document.getElementById('btn-export-trigger');
+const exportDropdownContainer = document.getElementById('export-dropdown-container');
 const editorActionsSelect = document.getElementById('editor-actions-select');
 
 const audioModal = document.getElementById('audio-modal');
@@ -347,36 +348,58 @@ nextSlideBtn.addEventListener('mouseenter', () => AudioEngine.playHover());
 btnFullscreen.addEventListener('click', toggleFullscreen);
 btnFullscreen.addEventListener('mouseenter', () => AudioEngine.playHover());
 
-// Export Menu actions handler
-exportActionsSelect.addEventListener('change', (e) => {
-  const type = e.target.value;
-  if (!type) return;
-  
-  if (type === 'pdf') {
+// Custom Export Dropdown Menu Handlers
+if (btnExportTrigger && exportDropdownContainer) {
+  btnExportTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = exportDropdownContainer.classList.contains('open');
+    // Close other dropdowns if any, then toggle
+    exportDropdownContainer.classList.toggle('open', !isOpen);
     AudioEngine.playClick();
-    window.print();
-  } else if (type === 'html') {
-    exportStandaloneHTML();
-  } else if (type === 'markdown') {
-    const currentMarkdown = markdownInput.value;
-    const blob = new Blob([currentMarkdown], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'game_design_document.md';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    AudioEngine.playSuccess();
-    updateStatusHUD("GDD MARKDOWN FILE DOWNLOADED");
-  }
+  });
   
-  // Reset select value to show placeholder
-  exportActionsSelect.value = '';
-});
-exportActionsSelect.addEventListener('mouseenter', () => AudioEngine.playHover());
+  btnExportTrigger.addEventListener('mouseenter', () => AudioEngine.playHover());
+  
+  // Handle individual export actions
+  const dropdownItems = exportDropdownContainer.querySelectorAll('.dropdown-item');
+  dropdownItems.forEach(item => {
+    item.addEventListener('mouseenter', () => AudioEngine.playHover());
+    
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const type = item.getAttribute('data-value');
+      exportDropdownContainer.classList.remove('open');
+      
+      if (type === 'pdf') {
+        AudioEngine.playClick();
+        window.print();
+      } else if (type === 'html') {
+        exportStandaloneHTML();
+      } else if (type === 'markdown') {
+        const currentMarkdown = markdownInput.value;
+        const blob = new Blob([currentMarkdown], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'game_design_document.md';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        AudioEngine.playSuccess();
+        updateStatusHUD("GDD MARKDOWN FILE DOWNLOADED");
+      }
+    });
+  });
+  
+  // Close export dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!exportDropdownContainer.contains(e.target)) {
+      exportDropdownContainer.classList.remove('open');
+    }
+  });
+}
 
 // Editor Actions Dropdown handler
 editorActionsSelect.addEventListener('change', (e) => {
