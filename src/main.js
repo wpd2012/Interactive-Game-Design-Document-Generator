@@ -35,6 +35,8 @@ const btnFullscreen = document.getElementById('btn-fullscreen');
 const btnExport = document.getElementById('btn-export');
 const btnExportHtml = document.getElementById('btn-export-html');
 const btnTemplate = document.getElementById('btn-template');
+const btnCopyMd = document.getElementById('btn-copy-md');
+const btnDownloadMd = document.getElementById('btn-download-md');
 
 const audioModal = document.getElementById('audio-modal');
 const btnEnableAudio = document.getElementById('btn-enable-audio');
@@ -358,6 +360,53 @@ btnExport.addEventListener('mouseenter', () => AudioEngine.playHover());
 // Standalone HTML Export
 btnExportHtml.addEventListener('click', exportStandaloneHTML);
 btnExportHtml.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// Copy Markdown to Clipboard
+btnCopyMd.addEventListener('click', () => {
+  navigator.clipboard.writeText(markdownInput.value)
+    .then(() => {
+      const originalText = btnCopyMd.innerHTML;
+      btnCopyMd.innerHTML = '✔ COPIED!';
+      btnCopyMd.style.color = 'var(--text-accent-secondary)';
+      AudioEngine.playSuccess();
+      setTimeout(() => {
+        btnCopyMd.innerHTML = originalText;
+        btnCopyMd.style.color = '';
+      }, 1500);
+    })
+    .catch(err => {
+      console.error('Could not copy text: ', err);
+      btnCopyMd.textContent = '❌ ERROR';
+      setTimeout(() => {
+        btnCopyMd.textContent = '📋 COPY';
+      }, 1500);
+    });
+});
+btnCopyMd.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// Download Markdown File
+btnDownloadMd.addEventListener('click', () => {
+  const currentMarkdown = markdownInput.value;
+  const blob = new Blob([currentMarkdown], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'game_design_document.md';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  
+  const originalText = btnDownloadMd.innerHTML;
+  btnDownloadMd.innerHTML = '✔ DOWNLOADED!';
+  btnDownloadMd.style.color = 'var(--text-accent)';
+  AudioEngine.playSuccess();
+  setTimeout(() => {
+    btnDownloadMd.innerHTML = originalText;
+    btnDownloadMd.style.color = '';
+  }, 1500);
+});
+btnDownloadMd.addEventListener('mouseenter', () => AudioEngine.playHover());
 
 // Template Reloader
 btnTemplate.addEventListener('click', () => {
