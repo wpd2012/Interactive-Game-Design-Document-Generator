@@ -1,117 +1,125 @@
 // ==========================================================================
-// INTERACTIVE SVG CORE LOOP GENERATOR
+// INTERACTIVE CORE LOOP GENERATOR — HTML + SVG HYBRID
 // ==========================================================================
 import { AudioEngine } from '../core/audio.js';
 
 export function renderLoops(container) {
-  // Find all loop containers in the target element
   const elements = container.querySelectorAll('.loop-diagram-container');
-  
+
   elements.forEach(el => {
     const rawNodes = el.getAttribute('data-nodes');
     if (!rawNodes) return;
-    
-    const nodes = rawNodes.split(',');
+
+    const nodes = rawNodes.split(',').map(n => n.trim());
     const numNodes = nodes.length;
-    
-    // SVG Settings
-    const width = 600;
-    const height = 360;
+
+    // Layout settings
+    const width = 520;
+    const height = 380;
     const cx = width / 2;
     const cy = height / 2;
-    const r = 105; // Radius of the circle of nodes
-    
-    let svgContent = `
-      <svg class="loop-diagram-svg" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-        <!-- SVG Definitions for Markers (Arrowheads) -->
-        <defs>
-          <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="var(--text-muted)" />
-          </marker>
-          <marker id="arrow-active" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="var(--text-accent)" />
-          </marker>
-        </defs>
-    `;
-    
-    // Coordinates of each node
+    const r = 120; // radius of the circle
+
+    // Calculate node positions
     const nodeCoords = [];
     for (let i = 0; i < numNodes; i++) {
-      // Offset by -90 degrees so the first node starts at the top
       const angle = (i * (360 / numNodes) - 90) * (Math.PI / 180);
       const x = cx + r * Math.cos(angle);
       const y = cy + r * Math.sin(angle);
       nodeCoords.push({ x, y, angle });
     }
-    
-    // Draw Arcs connecting the nodes
+
+    // === Build SVG arrow layer (background) ===
+    let arrowsSvg = `<svg class="loop-arrows-svg" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="loop-arrow-${el.id || Math.random().toString(36).slice(2)}" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="loop-arrowhead" />
+        </marker>
+        <marker id="loop-arrow-active-${el.id || Math.random().toString(36).slice(2)}" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="loop-arrowhead-active" />
+        </marker>
+      </defs>`;
+
+    const markerId = el.id || Math.random().toString(36).slice(2);
+
+    // Recalculate with stable marker IDs
+    arrowsSvg = `<svg class="loop-arrows-svg" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="la-${markerId}" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="loop-arrowhead" />
+        </marker>
+        <marker id="la-act-${markerId}" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="loop-arrowhead-active" />
+        </marker>
+      </defs>`;
+
     for (let i = 0; i < numNodes; i++) {
-      const startNode = nodeCoords[i];
-      const endNode = nodeCoords[(i + 1) % numNodes];
-      
-      // Calculate arc path
-      const angleStart = startNode.angle + 0.35; // offset slightly from center of node
-      const angleEnd = endNode.angle - 0.35;
-      
+      const angleStart = nodeCoords[i].angle + 0.4;
+      const angleEnd = nodeCoords[(i + 1) % numNodes].angle - 0.4;
       const x1 = cx + r * Math.cos(angleStart);
       const y1 = cy + r * Math.sin(angleStart);
       const x2 = cx + r * Math.cos(angleEnd);
       const y2 = cy + r * Math.sin(angleEnd);
-      
-      // Large-arc-flag is 0 for these segments
-      svgContent += `
-        <path class="loop-arrow-path" 
-              d="M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}" 
-              marker-end="url(#arrow)" />
-      `;
+
+      arrowsSvg += `<path class="loop-arc" data-arc-index="${i}"
+        d="M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}"
+        marker-end="url(#la-${markerId})" />`;
     }
-    
-    // Draw Nodes (Pills with text)
+    arrowsSvg += `</svg>`;
+
+    // === Build HTML node layer ===
+    let nodesHtml = '';
     nodeCoords.forEach((coord, idx) => {
-      const nodeText = nodes[idx];
-      const textWidth = Math.max(80, nodeText.length * 8 + 15);
-      const rectW = textWidth;
-      const rectH = 30;
-      const rectX = coord.x - rectW / 2;
-      const rectY = coord.y - rectH / 2;
-      
-      svgContent += `
-        <g class="loop-node" data-index="${idx}">
-          <rect class="loop-node-box" x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" rx="6" ry="6" />
-          <text class="loop-node-text" x="${coord.x}" y="${coord.y}">${nodeText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</text>
-        </g>
-      `;
+      const text = nodes[idx];
+      // Position nodes using percentage-based coordinates
+      const leftPct = (coord.x / width) * 100;
+      const topPct = (coord.y / height) * 100;
+
+      nodesHtml += `
+        <button class="loop-node-btn" data-index="${idx}"
+                style="left: ${leftPct}%; top: ${topPct}%;">
+          <span class="loop-node-label">${text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
+        </button>`;
     });
-    
-    svgContent += `</svg>`;
-    el.innerHTML = svgContent;
-    
-    // Bind sounds and events to nodes
-    el.querySelectorAll('.loop-node').forEach(nodeGroup => {
-      nodeGroup.addEventListener('mouseenter', () => {
+
+    // === Center label ===
+    const centerHtml = `<div class="loop-center-label">
+      <span class="loop-center-icon">⟳</span>
+      <span class="loop-center-text">LOOP</span>
+    </div>`;
+
+    // === Assemble ===
+    el.innerHTML = `
+      <div class="loop-stage" style="--loop-w: ${width}px; --loop-h: ${height}px;">
+        <div class="loop-arrows-layer">${arrowsSvg}</div>
+        <div class="loop-nodes-layer">${nodesHtml}</div>
+        ${centerHtml}
+      </div>`;
+
+    // === Bind events ===
+    el.querySelectorAll('.loop-node-btn').forEach(btn => {
+      btn.addEventListener('mouseenter', () => {
         AudioEngine.playHover();
-        
-        // Temporarily highlight the arrows connected to this node
-        const idx = parseInt(nodeGroup.getAttribute('data-index'), 10);
-        const paths = el.querySelectorAll('.loop-arrow-path');
-        
-        // Highlight outgoing path
-        if (paths[idx]) {
-          paths[idx].style.stroke = 'var(--text-accent)';
-          paths[idx].setAttribute('marker-end', 'url(#arrow-active)');
+        btn.classList.add('is-active');
+        const idx = parseInt(btn.getAttribute('data-index'), 10);
+        const arcs = el.querySelectorAll('.loop-arc');
+        if (arcs[idx]) {
+          arcs[idx].classList.add('is-active');
+          arcs[idx].setAttribute('marker-end', `url(#la-act-${markerId})`);
         }
       });
-      
-      nodeGroup.addEventListener('mouseleave', () => {
-        const idx = parseInt(nodeGroup.getAttribute('data-index'), 10);
-        const paths = el.querySelectorAll('.loop-arrow-path');
-        if (paths[idx]) {
-          paths[idx].style.stroke = '';
-          paths[idx].setAttribute('marker-end', 'url(#arrow)');
+
+      btn.addEventListener('mouseleave', () => {
+        btn.classList.remove('is-active');
+        const idx = parseInt(btn.getAttribute('data-index'), 10);
+        const arcs = el.querySelectorAll('.loop-arc');
+        if (arcs[idx]) {
+          arcs[idx].classList.remove('is-active');
+          arcs[idx].setAttribute('marker-end', `url(#la-${markerId})`);
         }
       });
-      
-      nodeGroup.addEventListener('click', () => {
+
+      btn.addEventListener('click', () => {
         AudioEngine.playClick();
       });
     });

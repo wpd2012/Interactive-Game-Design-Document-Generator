@@ -42,6 +42,11 @@
   
   --grid-bg: radial-gradient(circle, rgba(31, 31, 69, 0.2) 1px, transparent 1px);
   --grid-size: 20px 20px;
+  
+  /* Loop Diagram theme colors */
+  --loop-node-bg: rgba(255, 255, 255, 0.92);
+  --loop-node-border: rgba(0, 255, 255, 0.6);
+  --loop-node-text-color: #0a0a1a;
 }
 
 /* Theme: Cozy RPG */
@@ -65,6 +70,11 @@
   
   --grid-bg: none;
   --grid-size: auto;
+  
+  /* Loop Diagram theme colors */
+  --loop-node-bg: #ffffff;
+  --loop-node-border: #dcc8b4;
+  --loop-node-text-color: #000000;
 }
 
 /* Theme: Minimalist Dark */
@@ -88,6 +98,11 @@
   
   --grid-bg: linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
   --grid-size: 30px 30px;
+  
+  /* Loop Diagram theme colors */
+  --loop-node-bg: rgba(255, 255, 255, 0.92);
+  --loop-node-border: rgba(255, 255, 255, 0.4);
+  --loop-node-text-color: #111111;
 }
 
 /* Theme: Synthwave Arcade */
@@ -111,6 +126,11 @@
   
   --grid-bg: linear-gradient(rgba(255, 0, 127, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 0, 127, 0.03) 1px, transparent 1px);
   --grid-size: 24px 24px;
+  
+  /* Loop Diagram theme colors */
+  --loop-node-bg: rgba(255, 255, 255, 0.92);
+  --loop-node-border: rgba(255, 0, 127, 0.6);
+  --loop-node-text-color: #1a0520;
 }
 
 /* Theme: Frost Sci-Fi (Glassmorphic Light) */
@@ -134,6 +154,11 @@
   
   --grid-bg: radial-gradient(circle, rgba(15, 123, 194, 0.06) 1.5px, transparent 1.5px);
   --grid-size: 24px 24px;
+  
+  /* Loop Diagram theme colors */
+  --loop-node-bg: #ffffff;
+  --loop-node-border: rgba(15, 123, 194, 0.4);
+  --loop-node-text-color: #000000;
 }
 
 /* Apply Glassmorphic Blur to Frost theme containers */
@@ -169,6 +194,11 @@
   
   --grid-bg: none;
   --grid-size: auto;
+  
+  /* Loop Diagram theme colors */
+  --loop-node-bg: rgba(255, 255, 255, 0.92);
+  --loop-node-border: rgba(199, 139, 76, 0.6);
+  --loop-node-text-color: #1a1410;
 }
 
 /* ==========================================================================
@@ -909,57 +939,135 @@ body.live-solo .slide-container {
   transform: translateZ(15px);
 }
 
-/* 2. Core Game Loop Diagram */
+/* 2. Core Game Loop Diagram — Full Rewrite */
 .loop-diagram-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 16px 0;
+  margin: 20px 0;
   width: 100%;
 }
-.loop-diagram-svg {
-  max-width: 600px;
-  width: 100%;
-  height: auto;
+
+/* Stage: the positioned wrapper for arrows + nodes */
+.loop-stage {
+  position: relative;
+  width: var(--loop-w, 520px);
+  max-width: 100%;
+  aspect-ratio: 520 / 380;
 }
-.loop-node-box {
-  fill: #ffffff;
-  stroke: var(--border-color);
-  stroke-width: 2px;
-  transition: all var(--transition-fast);
-  cursor: pointer;
-}
-.loop-node-text {
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  font-weight: 800;
-  fill: rgba(0, 0, 0, 0.85);
-  text-anchor: middle;
-  dominant-baseline: middle;
+
+/* Arrow layer sits behind */
+.loop-arrows-layer {
+  position: absolute;
+  inset: 0;
   pointer-events: none;
-  transition: fill var(--transition-fast);
+  z-index: 1;
 }
-.loop-node:hover .loop-node-box {
-  stroke: var(--text-accent);
+.loop-arrows-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.loop-arrowhead {
+  fill: var(--text-muted);
+}
+.loop-arrowhead-active {
   fill: var(--text-accent);
-  filter: drop-shadow(0 0 3px rgba(var(--accent-rgb), 0.4));
 }
-.loop-node:hover .loop-node-text {
-  fill: var(--bg-app) !important;
-}
-[data-theme="frost"] .loop-node:hover .loop-node-text,
-[data-theme="cozy"] .loop-node:hover .loop-node-text {
-  fill: #ffffff !important;
-}
-.loop-arrow-path {
+.loop-arc {
   fill: none;
   stroke: var(--text-muted);
-  stroke-width: 2.5px;
+  stroke-width: 2px;
   stroke-dasharray: 6 4;
-  animation: dash 15s linear infinite;
+  animation: dash 20s linear infinite;
+  transition: stroke 0.25s ease;
 }
-.loop-node:hover ~ .loop-arrow-path {
+.loop-arc.is-active {
   stroke: var(--text-accent);
+  stroke-width: 2.5px;
+}
+
+/* Node layer sits on top */
+.loop-nodes-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* === THE NODE BUTTONS — guaranteed visible === */
+.loop-node-btn {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  /* HARD-CODED white background + black text for absolute visibility */
+  background: #ffffff;
+  color: #111111;
+  border: 2px solid var(--loop-node-border, var(--border-color));
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+  z-index: 2;
+  outline: none;
+  line-height: 1.4;
+}
+
+/* Hover: fill with accent, white text */
+.loop-node-btn:hover,
+.loop-node-btn.is-active {
+  background: var(--text-accent);
+  color: #ffffff;
+  border-color: var(--text-accent);
+  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.5), 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+/* Label inside button */
+.loop-node-label {
+  pointer-events: none;
+  position: relative;
+  z-index: 1;
+}
+
+/* Center LOOP label */
+.loop-center-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  z-index: 0;
+  opacity: 0.25;
+  pointer-events: none;
+}
+.loop-center-icon {
+  font-size: 28px;
+  line-height: 1;
+  color: var(--text-muted);
+}
+.loop-center-text {
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Light theme overrides — hover uses darker contrast */
+[data-theme="frost"] .loop-node-btn:hover,
+[data-theme="frost"] .loop-node-btn.is-active,
+[data-theme="cozy"] .loop-node-btn:hover,
+[data-theme="cozy"] .loop-node-btn.is-active {
+  color: #ffffff;
 }
 
 /* 3. Interactive Pacing Curve Chart */
