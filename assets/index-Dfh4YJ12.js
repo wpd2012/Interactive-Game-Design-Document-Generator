@@ -24,7 +24,7 @@
       `}h.forEach((t,u)=>{const a=i[u],g=Math.max(80,a.length*8+15),f=30,b=t.x-g/2,x=t.y-f/2;p+=`
         <g class="loop-node" data-index="${u}">
           <rect class="loop-node-box" x="${b}" y="${x}" width="${g}" height="${f}" rx="6" ry="6" />
-          <text class="loop-node-text" x="${t.x}" y="${t.y}">${a}</text>
+          <text class="loop-node-text" x="${t.x}" y="${t.y}">${a.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</text>
         </g>
       `}),p+="</svg>",s.innerHTML=p,s.querySelectorAll(".loop-node").forEach(t=>{t.addEventListener("mouseenter",()=>{l.playHover();const u=parseInt(t.getAttribute("data-index"),10),a=s.querySelectorAll(".loop-arrow-path");a[u]&&(a[u].style.stroke="var(--text-accent)",a[u].setAttribute("marker-end","url(#arrow-active)"))}),t.addEventListener("mouseleave",()=>{const u=parseInt(t.getAttribute("data-index"),10),a=s.querySelectorAll(".loop-arrow-path");a[u]&&(a[u].style.stroke="",a[u].setAttribute("marker-end","url(#arrow)"))}),t.addEventListener("click",()=>{l.playClick()})})})}function ve(e){e.querySelectorAll(".pacing-container").forEach(s=>{const o=s.getAttribute("data-points");if(!o)return;let i=o.split(",").map(a=>{const m=parseInt(a.trim(),10);return isNaN(m)?50:Math.max(0,Math.min(100,m))});const c=i.length;let d=`
       <div class="pacing-header">
