@@ -32,8 +32,7 @@ const toggleAudioBtn = document.getElementById('toggle-audio');
 const toggleEditorBtn = document.getElementById('toggle-editor');
 const toggleDocBtn = document.getElementById('toggle-doc');
 const btnFullscreen = document.getElementById('btn-fullscreen');
-const btnExport = document.getElementById('btn-export');
-const btnExportHtml = document.getElementById('btn-export-html');
+const exportActionsSelect = document.getElementById('export-actions-select');
 const editorActionsSelect = document.getElementById('editor-actions-select');
 
 const audioModal = document.getElementById('audio-modal');
@@ -348,16 +347,36 @@ nextSlideBtn.addEventListener('mouseenter', () => AudioEngine.playHover());
 btnFullscreen.addEventListener('click', toggleFullscreen);
 btnFullscreen.addEventListener('mouseenter', () => AudioEngine.playHover());
 
-// PDF Print Export
-btnExport.addEventListener('click', () => {
-  AudioEngine.playClick();
-  window.print();
+// Export Menu actions handler
+exportActionsSelect.addEventListener('change', (e) => {
+  const type = e.target.value;
+  if (!type) return;
+  
+  if (type === 'pdf') {
+    AudioEngine.playClick();
+    window.print();
+  } else if (type === 'html') {
+    exportStandaloneHTML();
+  } else if (type === 'markdown') {
+    const currentMarkdown = markdownInput.value;
+    const blob = new Blob([currentMarkdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'game_design_document.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    AudioEngine.playSuccess();
+    updateStatusHUD("GDD MARKDOWN FILE DOWNLOADED");
+  }
+  
+  // Reset select value to show placeholder
+  exportActionsSelect.value = '';
 });
-btnExport.addEventListener('mouseenter', () => AudioEngine.playHover());
-
-// Standalone HTML Export
-btnExportHtml.addEventListener('click', exportStandaloneHTML);
-btnExportHtml.addEventListener('mouseenter', () => AudioEngine.playHover());
+exportActionsSelect.addEventListener('mouseenter', () => AudioEngine.playHover());
 
 // Editor Actions Dropdown handler
 editorActionsSelect.addEventListener('change', (e) => {
