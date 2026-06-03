@@ -760,7 +760,7 @@ body.markdown-solo .editor-pane {
   justify-content: center;
   align-items: center;
   position: relative;
-  padding: 32px;
+  padding: 24px 24px 56px;
   overflow: hidden;
 }
 
@@ -768,18 +768,20 @@ body.markdown-solo .editor-pane {
 .slide-container {
   width: 100%;
   max-width: 1250px;
-  aspect-ratio: 16/9;
+  min-height: 320px;
+  max-height: 100%;
   background: var(--bg-panel);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-md);
-  padding: 48px;
+  padding: 36px 40px 32px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   position: relative;
   box-shadow: var(--shadow-glow), 0 10px 30px rgba(0,0,0,0.3);
   overflow-y: auto;
+  overflow-x: hidden;
   transition: transform var(--transition-smooth), max-width var(--transition-smooth);
+  scroll-behavior: smooth;
 }
 body.live-solo .slide-container {
   max-width: 1550px;
@@ -788,10 +790,47 @@ body.live-solo .slide-container {
   box-shadow: 0 8px 24px rgba(124, 74, 36, 0.06);
 }
 
+/* Premium Custom Scrollbar */
+.slide-container::-webkit-scrollbar {
+  width: 6px;
+}
+.slide-container::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 8px 0;
+}
+.slide-container::-webkit-scrollbar-thumb {
+  background: rgba(var(--accent-rgb), 0.25);
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+.slide-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--accent-rgb), 0.5);
+}
+/* Firefox scrollbar */
+.slide-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--accent-rgb), 0.25) transparent;
+}
+
+/* Scroll fade hint at bottom when content overflows */
+.slide-container::after {
+  content: '';
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  background: linear-gradient(to top, var(--bg-panel) 0%, transparent 100%);
+  pointer-events: none;
+  flex-shrink: 0;
+  margin-top: -32px;
+  z-index: 5;
+}
+
 /* Slide Presenter HUD Navigation */
 .presenter-hud {
   position: absolute;
-  bottom: 24px;
+  bottom: 12px;
   display: flex;
   align-items: center;
   background: var(--bg-panel);
@@ -841,20 +880,20 @@ body.live-solo .slide-container {
   opacity: 0;
   transform: scale(0.98) translateY(5px);
   animation: slide-in var(--transition-smooth) forwards;
-  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: 2px;
 }
 
 .slide-content h1 {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 3.2vw, 2.7rem);
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
   font-weight: 800;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   letter-spacing: -0.02em;
   color: var(--text-accent);
-  line-height: 1.15;
+  line-height: 1.2;
+  flex-shrink: 0;
 }
 [data-theme="cozy"] .slide-content h1 {
   font-family: var(--font-display);
@@ -866,28 +905,29 @@ body.live-solo .slide-container {
 
 .slide-content h2 {
   font-family: var(--font-display);
-  font-size: clamp(1.2rem, 1.8vw, 1.55rem);
+  font-size: clamp(1rem, 1.5vw, 1.3rem);
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   color: var(--text-accent-secondary);
+  flex-shrink: 0;
 }
 
 .slide-content p {
-  font-size: clamp(0.9rem, 1.2vw, 1.05rem);
-  line-height: 1.6;
-  margin-bottom: 16px;
+  font-size: clamp(0.82rem, 1.1vw, 0.95rem);
+  line-height: 1.55;
+  margin-bottom: 10px;
   color: var(--text-main);
   font-weight: 300;
 }
 
 .slide-content ul, .slide-content ol {
-  margin-left: 24px;
-  margin-bottom: 16px;
-  line-height: 1.6;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  line-height: 1.5;
 }
 .slide-content li {
-  margin-bottom: 8px;
-  font-size: clamp(0.85rem, 1.1vw, 0.98rem);
+  margin-bottom: 4px;
+  font-size: clamp(0.8rem, 1vw, 0.92rem);
   color: var(--text-main);
 }
 .slide-content li strong {
@@ -897,9 +937,9 @@ body.live-solo .slide-container {
 /* Slide Cards Grid Layout */
 .slide-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-top: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
 }
 
 /* ==========================================================================
@@ -914,7 +954,7 @@ body.live-solo .slide-container {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-md);
-  padding: 20px;
+  padding: 14px 16px;
   transform-style: preserve-3d;
   transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
   cursor: pointer;
@@ -927,16 +967,17 @@ body.live-solo .slide-container {
 }
 .tilt-card h3 {
   font-family: var(--font-display);
-  font-size: 1.1rem;
-  margin-bottom: 8px;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
   color: var(--text-accent);
   transform: translateZ(25px);
 }
 .tilt-card p {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-main);
   margin-bottom: 0;
   transform: translateZ(15px);
+  line-height: 1.4;
 }
 
 /* 2. Core Game Loop Diagram — Full Rewrite */
@@ -944,7 +985,7 @@ body.live-solo .slide-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 20px 0;
+  margin: 12px 0;
   width: 100%;
 }
 
@@ -1075,11 +1116,11 @@ body.live-solo .slide-container {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-md);
-  padding: 16px;
-  margin: 16px 0;
+  padding: 12px;
+  margin: 10px 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 .pacing-header {
   display: flex;
@@ -1094,7 +1135,7 @@ body.live-solo .slide-container {
 }
 .pacing-canvas {
   width: 100%;
-  height: 120px;
+  height: 100px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: var(--border-radius-sm);
   border: 1px solid rgba(var(--accent-rgb), 0.1);
@@ -1616,8 +1657,10 @@ body.live-solo .slide-container {
 .presentation-fullscreen .slide-container {
   max-width: 1750px;
   width: 92vw;
-  height: 80vh;
-  font-size: 1.4rem;
+  max-height: 82vh;
+  min-height: 50vh;
+  font-size: 1.2rem;
+  padding: 48px 56px 40px;
 }
 .presentation-fullscreen .presenter-hud {
   bottom: 30px;
