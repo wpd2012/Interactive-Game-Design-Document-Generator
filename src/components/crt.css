@@ -12,6 +12,7 @@
   background: radial-gradient(circle, rgba(0,0,0,0) 75%, rgba(0,0,0,0.06) 100%);
   pointer-events: none;
   z-index: 99999;
+  opacity: 1;
   transition: opacity 0.3s ease;
 }
 
@@ -23,12 +24,13 @@
   width: 100vw;
   height: 100vh;
   background: linear-gradient(
-    rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.015) 50%
+    rgba(0, 0, 0, 0) 50%, 
+    rgba(0, 0, 0, 0.055) 50%
   );
   background-size: 100% 4px;
   pointer-events: none;
   z-index: 99998;
+  opacity: 1;
   transition: opacity 0.3s ease;
 }
 
@@ -145,6 +147,13 @@ body.glitch-active .crt-scanlines {
   opacity: 0.85;
 }
 
+body.glitch-active-low .slide-container {
+  animation: transition-glitch-low 0.15s infinite linear;
+}
+body.glitch-active-low .crt-scanlines {
+  opacity: 0.2; /* Mildly enhanced scanlines */
+}
+
 @keyframes transition-glitch {
   0% {
     transform: translate(2px, 1px) skewX(2deg);
@@ -168,6 +177,29 @@ body.glitch-active .crt-scanlines {
   }
   100% {
     transform: translate(-1px, 1px) skewX(0deg);
+    filter: none;
+  }
+}
+
+@keyframes transition-glitch-low {
+  0% {
+    transform: translate(1px, 0.5px) skewX(0.5deg);
+    filter: brightness(1.05);
+  }
+  25% {
+    transform: translate(-0.5px, -1px) skewX(-0.5deg);
+    filter: contrast(1.05);
+  }
+  50% {
+    transform: translate(-1px, 0px) skewX(0.2deg);
+    filter: brightness(0.95);
+  }
+  75% {
+    transform: translate(0.5px, -0.5px) skewX(-0.2deg);
+    filter: contrast(0.95);
+  }
+  100% {
+    transform: translate(0px, 0px) skewX(0deg);
     filter: none;
   }
 }

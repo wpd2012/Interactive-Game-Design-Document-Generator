@@ -16,6 +16,7 @@ let slidesHTML = [];
 let autosaveTimeout = null;
 let isLiveSolo = false;
 let isMarkdownSolo = false;
+let glitchSetting = localStorage.getItem('playable_gdd_glitch_setting') || 'low';
 
 // DOM Element Selectors
 const markdownInput = document.getElementById('markdown-input');
@@ -38,6 +39,18 @@ const editorActionsSelect = document.getElementById('editor-actions-select');
 
 const audioModal = document.getElementById('audio-modal');
 const btnEnableAudio = document.getElementById('btn-enable-audio');
+
+// Settings Drawer Selectors
+const btnSettings = document.getElementById('btn-settings');
+const settingsDrawer = document.getElementById('settings-drawer');
+const btnCloseSettings = document.getElementById('btn-close-settings');
+const settingsThemeSelect = document.getElementById('settings-theme-select');
+const settingsToggleCrt = document.getElementById('settings-toggle-crt');
+const settingsToggleAudio = document.getElementById('settings-toggle-audio');
+const settingsToggleEditor = document.getElementById('settings-toggle-editor');
+const settingsToggleDoc = document.getElementById('settings-toggle-doc');
+const settingsToggleHeaderControls = document.getElementById('settings-toggle-header-controls');
+const settingsGlitchSelect = document.getElementById('settings-glitch-select');
 
 // ==========================================================================
 // RENDER ENGINE
@@ -67,6 +80,20 @@ function renderSlides() {
   initialize3DTilts();
 }
 
+function triggerGlitchTransition() {
+  if (glitchSetting === 'normal') {
+    document.body.classList.add('glitch-active');
+    setTimeout(() => {
+      document.body.classList.remove('glitch-active');
+    }, 220);
+  } else if (glitchSetting === 'low') {
+    document.body.classList.add('glitch-active-low');
+    setTimeout(() => {
+      document.body.classList.remove('glitch-active-low');
+    }, 150);
+  }
+}
+
 function goToSlide(index) {
   if (index < 0 || index >= slidesHTML.length) return;
   
@@ -76,11 +103,8 @@ function goToSlide(index) {
   // Synthesize transitions
   AudioEngine.playTransition();
   
-  // Trigger screen glitch visual aberration
-  document.body.classList.add('glitch-active');
-  setTimeout(() => {
-    document.body.classList.remove('glitch-active');
-  }, 220);
+  // Trigger screen glitch visual aberration (only if enabled)
+  triggerGlitchTransition();
   
   // Render
   renderSlides();
@@ -257,18 +281,17 @@ toggleEditorBtn.addEventListener('click', () => {
   isLiveSolo = !isLiveSolo;
   document.body.classList.toggle('live-solo', isLiveSolo);
   toggleEditorBtn.classList.toggle('active', isLiveSolo);
+  syncSettingsToggle(settingsToggleEditor, isLiveSolo);
   
   if (isLiveSolo) {
     isMarkdownSolo = false;
     document.body.classList.remove('markdown-solo');
     toggleDocBtn.classList.remove('active');
+    syncSettingsToggle(settingsToggleDoc, false);
   }
   
   // Trigger screen glitch visual aberration during layout transition
-  document.body.classList.add('glitch-active');
-  setTimeout(() => {
-    document.body.classList.remove('glitch-active');
-  }, 220);
+  triggerGlitchTransition();
   
   AudioEngine.playClick();
   
@@ -289,18 +312,17 @@ toggleDocBtn.addEventListener('click', () => {
   isMarkdownSolo = !isMarkdownSolo;
   document.body.classList.toggle('markdown-solo', isMarkdownSolo);
   toggleDocBtn.classList.toggle('active', isMarkdownSolo);
+  syncSettingsToggle(settingsToggleDoc, isMarkdownSolo);
   
   if (isMarkdownSolo) {
     isLiveSolo = false;
     document.body.classList.remove('live-solo');
     toggleEditorBtn.classList.remove('active');
+    syncSettingsToggle(settingsToggleEditor, false);
   }
   
   // Trigger screen glitch visual aberration
-  document.body.classList.add('glitch-active');
-  setTimeout(() => {
-    document.body.classList.remove('glitch-active');
-  }, 220);
+  triggerGlitchTransition();
   
   AudioEngine.playClick();
   
@@ -318,18 +340,22 @@ toggleDocBtn.addEventListener('mouseenter', () => AudioEngine.playHover());
 // Toggles (CRT / AUDIO)
 toggleCrtBtn.addEventListener('click', () => {
   const isCrt = document.documentElement.getAttribute('data-crt') === 'true';
-  document.documentElement.setAttribute('data-crt', !isCrt ? 'true' : 'false');
-  toggleCrtBtn.classList.toggle('active', !isCrt);
+  const newCrt = !isCrt;
+  document.documentElement.setAttribute('data-crt', newCrt ? 'true' : 'false');
+  toggleCrtBtn.classList.toggle('active', newCrt);
+  syncSettingsToggle(settingsToggleCrt, newCrt);
   AudioEngine.playClick();
 });
 toggleCrtBtn.addEventListener('mouseenter', () => AudioEngine.playHover());
 
 toggleAudioBtn.addEventListener('click', () => {
   const isAudio = document.documentElement.getAttribute('data-audio') === 'true';
-  document.documentElement.setAttribute('data-audio', !isAudio ? 'true' : 'false');
-  toggleAudioBtn.classList.toggle('active', !isAudio);
+  const newAudio = !isAudio;
+  document.documentElement.setAttribute('data-audio', newAudio ? 'true' : 'false');
+  toggleAudioBtn.classList.toggle('active', newAudio);
+  syncSettingsToggle(settingsToggleAudio, newAudio);
   
-  AudioEngine.setEnabled(!isAudio);
+  AudioEngine.setEnabled(newAudio);
   AudioEngine.playClick();
 });
 toggleAudioBtn.addEventListener('mouseenter', () => AudioEngine.playHover());
@@ -620,11 +646,109 @@ async function exportStandaloneHTML() {
 }
 
 // ==========================================================================
+// SETTINGS DRAWER
+// ==========================================================================
+
+// Helper: sync a settings pill toggle button
+function syncSettingsToggle(btn, isActive) {
+  if (!btn) return;
+  btn.classList.toggle('active', isActive);
+  btn.textContent = isActive ? 'ON' : 'OFF';
+}
+
+// Open/Close Settings Drawer
+btnSettings.addEventListener('click', () => {
+  const isOpen = document.body.classList.contains('settings-open');
+  // Close audio deck if open
+  document.body.classList.remove('drawer-open');
+  document.body.classList.toggle('settings-open', !isOpen);
+  AudioEngine.playClick();
+});
+btnSettings.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+btnCloseSettings.addEventListener('click', () => {
+  document.body.classList.remove('settings-open');
+  AudioEngine.playClick();
+});
+btnCloseSettings.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// Close settings when clicking outside
+document.addEventListener('click', (e) => {
+  if (document.body.classList.contains('settings-open') &&
+      !settingsDrawer.contains(e.target) &&
+      e.target !== btnSettings && !btnSettings.contains(e.target)) {
+    document.body.classList.remove('settings-open');
+  }
+});
+
+// Settings Theme Select — syncs with header select
+settingsThemeSelect.addEventListener('change', (e) => {
+  const theme = e.target.value;
+  document.documentElement.setAttribute('data-theme', theme);
+  themeSelect.value = theme; // sync header dropdown
+  AudioEngine.playClick();
+  renderSlides();
+});
+
+// Also sync settings theme when header theme changes
+themeSelect.addEventListener('change', () => {
+  settingsThemeSelect.value = themeSelect.value;
+});
+
+// Settings CRT Toggle
+settingsToggleCrt.addEventListener('click', () => {
+  toggleCrtBtn.click(); // delegate to existing handler
+});
+settingsToggleCrt.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// Settings Audio Toggle
+settingsToggleAudio.addEventListener('click', () => {
+  toggleAudioBtn.click(); // delegate to existing handler
+});
+settingsToggleAudio.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// Settings Editor Toggle
+settingsToggleEditor.addEventListener('click', () => {
+  toggleEditorBtn.click(); // delegate to existing handler
+});
+settingsToggleEditor.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// Settings Docs Toggle
+settingsToggleDoc.addEventListener('click', () => {
+  toggleDocBtn.click(); // delegate to existing handler
+});
+settingsToggleDoc.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// Settings Header Controls Visibility Toggle
+settingsToggleHeaderControls.addEventListener('click', () => {
+  const isHidden = document.body.classList.toggle('header-controls-hidden');
+  syncSettingsToggle(settingsToggleHeaderControls, !isHidden);
+  AudioEngine.playClick();
+});
+settingsToggleHeaderControls.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// Settings Glitch Select Change
+settingsGlitchSelect.addEventListener('change', (e) => {
+  glitchSetting = e.target.value;
+  localStorage.setItem('playable_gdd_glitch_setting', glitchSetting);
+  AudioEngine.playClick();
+});
+settingsGlitchSelect.addEventListener('mouseenter', () => AudioEngine.playHover());
+
+// Also close settings drawer when audio deck opens
+btnAudioDeck.addEventListener('click', () => {
+  document.body.classList.remove('settings-open');
+}, true);
+
+// ==========================================================================
 // SYSTEM INITIATION
 // ==========================================================================
 function start() {
   const loadedScript = loadDraft();
   markdownInput.value = loadedScript;
+  
+  // Set initial glitch select value
+  settingsGlitchSelect.value = glitchSetting;
   
   renderSlides();
   updateStatusHUD("SYSTEM READY");

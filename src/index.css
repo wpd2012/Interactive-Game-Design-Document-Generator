@@ -1981,5 +1981,109 @@ body.drawer-open .audio-deck-drawer {
   color: var(--text-accent-secondary);
 }
 
+/* ==========================================================================
+   SETTINGS DRAWER
+   ========================================================================== */
+.settings-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100vh;
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border-color);
+  z-index: 99991;
+  padding: 24px;
+  transform: translateX(100%);
+  transition: transform var(--transition-smooth);
+  box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+}
+body.settings-open .settings-drawer {
+  transform: translateX(0);
+}
 
+/* Settings gear button */
+.btn-settings-trigger {
+  border-color: var(--border-color);
+  color: var(--text-muted);
+  padding: 6px 10px !important;
+  font-size: 1rem !important;
+  min-width: unset !important;
+  line-height: 1;
+}
+.btn-settings-trigger:hover {
+  border-color: var(--text-accent);
+  color: var(--text-accent);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Settings select (theme dropdown inside drawer) */
+.settings-select {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 8px 10px;
+  border-radius: var(--border-radius-sm);
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+  letter-spacing: 0.05em;
+}
+.settings-select:hover,
+.settings-select:focus {
+  border-color: var(--text-accent);
+}
+
+/* Toggle row layout */
+.settings-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+.settings-toggle-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+/* ON/OFF pill toggle */
+.settings-toggle {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  letter-spacing: 0.08em;
+  min-width: 44px;
+  text-align: center;
+}
+.settings-toggle:hover {
+  border-color: var(--text-accent);
+}
+.settings-toggle.active {
+  background: rgba(var(--accent-rgb), 0.15);
+  border-color: var(--text-accent);
+  color: var(--text-accent);
+}
+
+/* Header controls hidden state */
+body.header-controls-hidden .header-controls > .control-group:nth-child(1),
+body.header-controls-hidden .header-controls > .control-group:nth-child(2) {
+  display: none !important;
+}
 

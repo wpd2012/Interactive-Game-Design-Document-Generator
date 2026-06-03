@@ -78,6 +78,7 @@
               </div>
             </div>
             <button id="btn-audio-deck" class="btn btn-action btn-deck" title="Open Synthesizer Audio Deck">🎛️ AUDIO DECK</button>
+            <button id="btn-settings" class="btn btn-action btn-settings-trigger" title="Settings">⚙️</button>
           </div>
         </div>
       </div>
@@ -204,6 +205,63 @@
         </select>
       </div>
       <button id="btn-test-click" class="btn-test-sound">TEST CLICK SFX</button>
+    </div>
+  </aside>
+
+  <!-- Settings Drawer Component -->
+  <aside id="settings-drawer" class="settings-drawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title">SETTINGS</h3>
+      <button id="btn-close-settings" class="btn-close-drawer" title="Close Settings">&times;</button>
+    </div>
+
+    <div class="drawer-section">
+      <h4 class="drawer-section-title">VISUAL THEME</h4>
+      <select id="settings-theme-select" class="settings-select" aria-label="Select visual theme">
+        <option value="cyberpunk">CYBERPUNK</option>
+        <option value="synthwave">SYNTHWAVE ARCADE</option>
+        <option value="frost">FROST SCI-FI</option>
+        <option value="steampunk">STEAMPUNK BRASS</option>
+        <option value="cozy">COZY RPG</option>
+        <option value="minimalist">MINIMALIST</option>
+      </select>
+    </div>
+
+    <div class="drawer-section">
+      <h4 class="drawer-section-title">DISPLAY TOGGLES</h4>
+      <div class="settings-toggle-row">
+        <span class="settings-toggle-label">CRT Scanlines</span>
+        <button id="settings-toggle-crt" class="settings-toggle active" title="Toggle CRT">ON</button>
+      </div>
+      <div class="settings-toggle-row">
+        <span class="settings-toggle-label">Sound Effects</span>
+        <button id="settings-toggle-audio" class="settings-toggle active" title="Toggle Audio">ON</button>
+      </div>
+      <div class="settings-toggle-row">
+        <span class="settings-toggle-label">Editor Panel</span>
+        <button id="settings-toggle-editor" class="settings-toggle" title="Toggle Editor">OFF</button>
+      </div>
+      <div class="settings-toggle-row">
+        <span class="settings-toggle-label">Docs Panel</span>
+        <button id="settings-toggle-doc" class="settings-toggle" title="Toggle Docs">OFF</button>
+      </div>
+    </div>
+
+    <div class="drawer-section">
+      <h4 class="drawer-section-title">LAYOUT</h4>
+      <div class="settings-toggle-row">
+        <span class="settings-toggle-label">Header Controls Bar</span>
+        <button id="settings-toggle-header-controls" class="settings-toggle active" title="Show/Hide theme and toggles in header">ON</button>
+      </div>
+    </div>
+
+    <div class="drawer-section">
+      <h4 class="drawer-section-title">TRANSITIONS</h4>
+      <select id="settings-glitch-select" class="settings-select" aria-label="Select glitch flash effect">
+        <option value="off">OFF</option>
+        <option value="low">LOW (DEFAULT)</option>
+        <option value="normal">NORMAL</option>
+      </select>
     </div>
   </aside>
 
