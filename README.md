@@ -42,12 +42,12 @@ All sound effects are synthesized programmatically in real-time. The core oscill
 - [x] **Procedural DSP Synthesizer**: Custom frequency control, wave configurations, test triggers, and interactive sound deck drawer.
 - [x] **Aesthetic Rendering Pipeline**: CRT cathode overlay, vignette focus shadow, refresh rate screen flickers, and chromatic skew transitions.
 - [x] **Thematic Styles**: Cyberpunk, Synthwave Arcade, Frost Sci-Fi (glassmorphism), Steampunk Brass, Cozy RPG, and Minimalist theme engines.
-- [x] **Interactive Vector Diagrams**: Animated circular game loop SVGs with hover-reactive node lighting.
+- [x] **Interactive Vector Diagrams**: HTML+SVG hybrid circular game loop diagrams with high-contrast node buttons and hover-reactive accent lighting.
 - [x] **Canvas Pacing Matrix**: Bezier challenge curves editable via sliders or profile templates (Boss Fight, Stealth Run, etc.).
 - [x] **Behavioral State Tracker**: Dynamic AI state sequence boxes with interactive descriptions and active state glows.
 - [x] **Mechanics Sandboxes**: Live equation calculation playgrounds and weighted loot chest rolling simulation logs.
 - [x] **Production Milestones**: Interactive horizontal pipelines tracking dates, deliverables, and procedural checklists.
-- [x] **Ergonomic Layout Controls**: Expandable presentation viewports (both GDD source-code solo and Live View solo modes) and responsive CSS typography clamping.
+- [x] **Ergonomic Layout Controls**: Expandable presentation viewports (both GDD source-code solo and Live View solo modes), responsive CSS typography clamping, and premium themed scrollbars with scroll-fade hints.
 
 ---
 
@@ -95,13 +95,21 @@ this.config = {
 *   **Cold Boot Time**: $\sim 35\text{ms}$ (initial file compilation to render).
 *   **Dependency Count**: $0$ external dependencies at runtime.
 *   **Memory Footprint**: $<15\text{MB}$ active heap allocations.
-*   **Build Bundle Size**: $35.35\text{KB}$ JavaScript, $33.61\text{KB}$ CSS (production gzipped).
+*   **Build Bundle Size**: $37.63\text{KB}$ JavaScript, $38.59\text{KB}$ CSS (production gzipped).
 
 ---
 
 ## 🗓️ Version History & Roadmap
 
-### v1.3.0 (Current)
+### v1.4.0 (Current)
+*   **Complete Core Loop Diagram Rewrite**: Replaced pure SVG rendering with an HTML+SVG hybrid architecture. Loop nodes are now real HTML `<button>` elements with guaranteed-visible white backgrounds and dark text, eliminating all prior readability issues across themes.
+*   **Live Presentation Rework**: Removed rigid 16:9 aspect-ratio constraint on the slide container. Dense slides now expand and scroll gracefully instead of cramming content.
+*   Added **premium themed scrollbars** (Webkit + Firefox) with accent-colored thumbs and bottom fade-gradient scroll hints.
+*   Scaled down typography, margins, and interactive component sizes (pacing charts, tilt cards, loop diagrams) for better density handling across all slide types.
+*   Updated fullscreen presentation mode to use flexible max-height instead of fixed height.
+*   Centered "⟳ LOOP" watermark label inside loop diagrams for visual polish.
+
+### v1.3.0
 *   Rebranded main titles to **Interactive GDD Engine**.
 *   Implemented **Formula Sandbox Playgrounds** for game mechanic testing.
 *   Implemented **Weighted Loot Chest Probability Simulators**.
