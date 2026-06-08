@@ -200,6 +200,12 @@ function injectMarkup(type) {
 // ==========================================================================
 // SYSTEM AUTOSAVE
 // ==========================================================================
+// ==========================================================================
+// SYSTEM AUTOSAVE & HUD STATUS
+// ==========================================================================
+let ambientStatus = 'SYSTEM READY';
+let notificationTimeout = null;
+
 function triggerAutoSave() {
   updateStatusHUD("SAVING...");
   
@@ -207,12 +213,29 @@ function triggerAutoSave() {
   
   autosaveTimeout = setTimeout(() => {
     saveDraft(markdownInput.value);
-    updateStatusHUD("SYSTEM READY • AUTO-SAVED");
+    updateStatusHUD("DRAFT AUTO-SAVED", 'notify');
   }, 1000);
 }
 
-function updateStatusHUD(msg) {
-  statusMessage.textContent = msg;
+function updateStatusHUD(msg, type = null) {
+  if (type === 'notify' || type === 'error') {
+    if (notificationTimeout) clearTimeout(notificationTimeout);
+    
+    statusMessage.textContent = `▶ ${msg}`;
+    statusMessage.className = type === 'error' ? 'status-error' : 'status-notify';
+    
+    notificationTimeout = setTimeout(() => {
+      statusMessage.className = '';
+      statusMessage.textContent = ambientStatus;
+      notificationTimeout = null;
+    }, 3000);
+  } else {
+    ambientStatus = msg;
+    if (!notificationTimeout) {
+      statusMessage.className = '';
+      statusMessage.textContent = ambientStatus;
+    }
+  }
 }
 
 // ==========================================================================
@@ -414,7 +437,7 @@ if (btnExportTrigger && exportDropdownContainer) {
         URL.revokeObjectURL(url);
         
         AudioEngine.playSuccess();
-        updateStatusHUD("GDD MARKDOWN FILE DOWNLOADED");
+        updateStatusHUD("GDD MARKDOWN FILE DOWNLOADED", 'notify');
       }
     });
   });
@@ -436,7 +459,7 @@ editorActionsSelect.addEventListener('change', (e) => {
     navigator.clipboard.writeText(markdownInput.value)
       .then(() => {
         AudioEngine.playSuccess();
-        updateStatusHUD("GDD SOURCE COPIED TO CLIPBOARD");
+        updateStatusHUD("GDD SOURCE COPIED TO CLIPBOARD", 'notify');
       })
       .catch(err => {
         console.error('Could not copy text: ', err);
@@ -454,7 +477,7 @@ editorActionsSelect.addEventListener('change', (e) => {
     URL.revokeObjectURL(url);
     
     AudioEngine.playSuccess();
-    updateStatusHUD("GDD MARKDOWN FILE DOWNLOADED");
+    updateStatusHUD("GDD MARKDOWN FILE DOWNLOADED", 'notify');
   } else if (action === 'template') {
     if (confirm("Reset layout with demo GDD? Your unsaved draft will be replaced.")) {
       markdownInput.value = DEMO_TEMPLATE;
@@ -638,10 +661,10 @@ async function exportStandaloneHTML() {
     URL.revokeObjectURL(url);
     
     AudioEngine.playSuccess();
-    updateStatusHUD("OFFLINE GDD EXPORTED SUCCESS");
+    updateStatusHUD("OFFLINE GDD EXPORTED SUCCESS", 'notify');
   } catch (err) {
     console.error('Error during HTML export:', err);
-    updateStatusHUD("EXPORT ERROR: BUNDLING FAILED");
+    updateStatusHUD("EXPORT ERROR: BUNDLING FAILED", 'error');
   }
 }
 

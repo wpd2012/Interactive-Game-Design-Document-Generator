@@ -1576,6 +1576,18 @@ body.live-solo .slide-container {
 }
 #status-message {
   font-weight: 500;
+  transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.2s ease;
+  display: inline-block;
+}
+#status-message.status-notify {
+  color: var(--text-accent);
+  text-shadow: var(--shadow-glow);
+  transform: translateX(4px);
+}
+#status-message.status-error {
+  color: var(--text-accent-secondary);
+  text-shadow: 0 0 8px rgba(255, 0, 85, 0.5);
+  transform: translateX(4px);
 }
 .footer-meta kbd {
   background: var(--bg-input);
